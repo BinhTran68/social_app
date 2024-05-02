@@ -21,14 +21,17 @@ function handleImageError() {
 
 <template>
     <Head title="Socical Media Website"/>
-    <div class="grid grid-cols-12 gap-3">
-        <GroupList/>
-        <div class="col-span-6 flex flex-col gap-3">
+    <div class="grid md:grid-cols-12 gap-3">
+        <div class="md:col-span-3">
+            <GroupList/>
+        </div>
+        <div class="md:col-span-6 flex flex-col gap-3">
             <CreatePost/>
             <PostsList/>
         </div>
-        <div class="col-span-3 py-6 px-3">
+        <div class="md:col-span-3 py-6 px-3">
             <FollowingList/>
         </div>
+
     </div>
 </template>

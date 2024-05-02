@@ -14,6 +14,9 @@ import 'vuetify/dist/vuetify.min.css';
 import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
+import 'material-design-icons-iconfont/dist/material-design-icons.css'
+import "@fortawesome/fontawesome-free/css/all.css";
+import "@mdi/font/css/materialdesignicons.css";
 import * as directives from 'vuetify/directives'
 const vuetify = createVuetify({
     components,
