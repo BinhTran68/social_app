@@ -11,13 +11,25 @@
            {
                id : 1,
                name : 'test1.png',
-               url : 'https://media-cdn-v2.laodong.vn/storage/newsportal/2023/8/26/1233821/Giai-Nhi-1--Nang-Tre.jpg',
+               url : 'https://picsum.photos/seed/picsum/300',
                mime : 'image/png'
            },
            {
                id : 2,
                name : 'test3.png',
                url : 'https://picsum.photos/seed/picsum/500',
+               mime : 'image/png'
+           },
+           {
+               id : 3,
+               name : 'test3.png',
+               url : 'https://picsum.photos/seed/picsum/800',
+               mime : 'image/png'
+           },
+           {
+               id : 3,
+               name : 'test3.png',
+               url : 'https://picsum.photos/seed/picsum/1000',
                mime : 'image/png'
            }
        ],
@@ -35,6 +47,14 @@
            name : 'Join Smith',
            avatar : 'https://randomuser.me/api/portraits/men/25.jpg'
        },
+       media : [
+           {
+               id : 1,
+               name : 'test1.png',
+               url : 'https://picsum.photos/seed/picsum/300',
+               mime : 'image/png'
+           }
+       ],
        body: 'Rùi mình nhớ những hôm đi bộ một mình tới trường, cái gì cũng lạ lẫm',
        created_at: '2023-11-19 15:12'
 

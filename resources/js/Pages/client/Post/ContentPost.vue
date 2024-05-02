@@ -1,6 +1,7 @@
 <script setup>
 
 import {Disclosure, DisclosureButton, DisclosurePanel} from "@headlessui/vue";
+import CarouselComponent from "@/Components/CarouselComponent.vue";
 
 const lenghtDisplay = 120;
 
@@ -25,7 +26,14 @@ defineProps({
                 </DisclosureButton>
             </div>
         </Disclosure>
-        <div v-if="media" class="">
+        <div v-if="media" >
+            <v-carousel>
+                <v-carousel-item
+                    v-for="src in media"
+                    :src="src.url"
+                    cover
+                ></v-carousel-item>
+            </v-carousel>
 
         </div>
     </div>
