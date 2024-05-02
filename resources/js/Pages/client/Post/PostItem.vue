@@ -23,10 +23,10 @@ defineProps({
 </script>
 
 <template>
-    <div class="bg-white px-6 py-3 rounded-md">
-        <div class="flex items-center gap-3">
+    <div class="bg-white flex flex-col gap-4 py-3 rounded-md">
+        <div class="flex items-center px-5 gap-3">
             <CircleImage :src="post.user.avatar" alt=""/>
-            <div class="flex flex-col ">
+            <div class="flex flex-col  ">
                 <h4 class="font-bold">
                     <span class="hover:underline cursor-pointer">
                           {{ post.user.name }}
@@ -41,9 +41,9 @@ defineProps({
                 <small class="text-gray-500">{{ post.created_at }}</small>
             </div>
         </div>
-        <div class="px-2">
+        <div class="flex flex-col gap-3">
             <ContentPost :body="post.body" :media="post.media"/>
-            <div class="flex items-center justify-start gap-2 ">
+            <div class="flex items-center mx-5 justify-start gap-2 ">
                 <ActionPost :icon="heatIcon"/>
                 <ActionPost :icon="comemntIcon"/>
                 <ActionPost :icon="shareIcon"/>
