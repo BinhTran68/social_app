@@ -10,6 +10,10 @@ Route::get('/', [HomeController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('home');
 
+Route::get('/u/{user:username}', [ProfileController::class, 'index'])
+    ->name('profile');
+
+
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');

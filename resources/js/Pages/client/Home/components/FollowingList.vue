@@ -12,7 +12,7 @@ const searchKeyword = ref('');
 </script>
 
 <template>
-    <div class="col-span-3  bg-gray-50 rounded-md border h-[500px] overflow-hidden flex-col flex ">
+    <div class="col-span-3 bg-gray-50 rounded-md border h-[500px] overflow-hidden flex-col flex ">
         <div class="px-10">
             <h2 class="mb-2 text-2xl font-bold px-4">My follower</h2>
             <TextInput :model-value="searchKeyword" placeholder="Type to search"  />
