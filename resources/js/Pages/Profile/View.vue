@@ -25,7 +25,6 @@ const props = defineProps({
 const isMyProfile = computed(() => (authUser && authUser.id === props.user.id))
 
 function onCoverChange(e) {
-    console.log(e)
     const  file = e.target.file[0]
     if (file) {
         const reader = new FileReader()
@@ -46,6 +45,7 @@ function onCoverChange(e) {
 
 <template>
     <AuthenticatedLayout>
+        <pre>{{user}}</pre>
         <div class="container max-w-[928px] h-full mx-auto ">
             <div class="relative bg-white">
                 <img

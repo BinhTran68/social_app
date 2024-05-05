@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Domain\User\Controller;
+namespace App\Domain\User\Controllers;
 
-use App\Domain\User\Request\ProfileUpdateRequest;
+use App\Domain\User\Requests\ProfileUpdateRequest;
+use App\Domain\User\Resources\UserResource;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
+use function Symfony\Component\String\u;
 
 class ProfileController extends Controller
 {
@@ -21,7 +23,7 @@ class ProfileController extends Controller
         return Inertia::render('Profile/View', [
             'mustVerifyEmail' => $user instanceof MustVerifyEmail,
             'status' => session('status'),
-            'user' => $user
+            'user' => UserResource::make($user)
         ]);
     }
 

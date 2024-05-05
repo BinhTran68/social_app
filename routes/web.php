@@ -1,7 +1,7 @@
 <?php
 
-use App\Domain\Home\Controller\HomeController;
-use App\Domain\User\Controller\ProfileController;
+use App\Domain\Home\Controllers\HomeController;
+use App\Domain\User\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
