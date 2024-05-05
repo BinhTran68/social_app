@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Domain\User\Controller;
 
-use App\Http\Requests\ProfileUpdateRequest;
+use App\Domain\User\Request\ProfileUpdateRequest;
+use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
@@ -11,7 +12,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
-use function Symfony\Component\String\u;
 
 class ProfileController extends Controller
 {
