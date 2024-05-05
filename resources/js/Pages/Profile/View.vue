@@ -1,26 +1,140 @@
 <script setup>
+import {usePage} from "@inertiajs/vue3";
+import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import TabItem from "@/Pages/Profile/Partials/TabItem.vue";
+import Edit from "@/Pages/Profile/Edit.vue";
+import {computed} from "vue";
 
-    import {usePage} from "@inertiajs/vue3";
-
-    defineProps({
-        mustVerifyEmail : {
-          type: Boolean
-        },
+const authUser = usePage().props.auth.user
 
 
-    })
+const props = defineProps({
+    mustVerifyEmail : {
+        type: Boolean
+    },
+    status : {
+        type: Boolean
+    },
+    user : {
+        type: Object
+    }
+})
 
-    const user = usePage().props.auth.user
+const isMyProfile = computed(() => (authUser && authUser.id === props.user.id))
+
+
+
+console.log(props.user.name)
+
+
 
 </script>
 
-<template>
-    <div>
-        {{user}}
-    </div>
-
-</template>
 
 <style scoped>
 
 </style>
+
+<template>
+    <AuthenticatedLayout>
+        <div class="container max-w-[928px] h-full mx-auto ">
+            <div class=" bg-white">
+                <img
+                    src="https://i0.wp.com/nftartwithlauren.com/wp-content/uploads/2023/11/laurenmcdonaghpereiraphoto_A_field_of_blooming_sunflowers_und_40d30d23-9ecd-489f-a2b9-5a8f7293af9a_0.png?fit=1024%2C574&ssl=1"
+                    alt="cover photo"
+                    class="object-cover w-full h-[350px] "
+                >
+                <div class="flex py-5">
+                    <img
+                        src="https://i0.wp.com/nftartwithlauren.com/wp-content/uploads/2023/11/laurenmcdonaghpereiraphoto_A_field_of_blooming_sunflowers_und_40d30d23-9ecd-489f-a2b9-5a8f7293af9a_0.png?fit=1024%2C574&ssl=1"
+                        alt="cover photo"
+                        class="
+                        w-[173px]
+                        h-[173px]
+                        object-cover
+                        rounded-full ml-[48px] -mt-[100px]"
+                    >
+                    <div class="flex justify-between items-center p-3">
+                        <h1 class="font-bold text-lg">
+                            {{user.name}}
+                        </h1>
+                    </div>
+                </div>
+
+                <div>
+
+                </div>
+            </div>
+            <div class="border-t">
+                <TabGroup>
+                    <TabList class="flex bg-white">
+                        <Tab
+                            as="template"
+                            key="About"
+                            v-slot="{ selected }"
+                        >
+                            <TabItem :selected="selected" text="About"/>
+                        </Tab>
+                        <Tab
+                            as="template"
+                            key="Posts"
+                            v-slot="{ selected }"
+                        >
+                            <TabItem :selected="selected" text="Posts"/>
+                        </Tab>
+
+                        <Tab
+                            as="template"
+                            key="Followers"
+                            v-slot="{ selected }"
+                        >
+                            <TabItem :selected="selected" text="Followers"/>
+                        </Tab>
+                        <Tab
+                            as="template"
+                            key="Followings"
+                            v-slot="{ selected }"
+                        >
+                            <TabItem :selected="selected" text="Followings"/>
+                        </Tab>
+                        <Tab
+                            as="template"
+                            key="Photos"
+                            v-slot="{ selected }"
+                        >
+                            <TabItem :selected="selected" text="Photos"/>
+                        </Tab>
+                    </TabList>
+
+                    <TabPanels class="mt-2">
+                        <TabPanel
+                            key="Photos"
+                            :class="[
+                             ]"
+                        >
+                            <Edit
+                                v-if="authUser && authUser.id === user.id"
+                                :must-verify-email="mustVerifyEmail"
+                                :status="status"
+                            />
+                        </TabPanel>
+                        <TabPanel
+                            key="Flower"
+                            :class="[
+            'rounded-xl bg-white p-3',
+            'ring-white/60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2',
+          ]"
+                        >
+                            Flower
+                        </TabPanel>
+                    </TabPanels>
+                </TabGroup>
+            </div>
+        </div>
+    </AuthenticatedLayout>
+
+</template>
+
+
+
