@@ -74,4 +74,12 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
+
+    public function updateCover(Request $request)
+    {
+        $data = $request->validate([
+            'file' => ['image']
+        ]);
+        dd($data);
+    }
 }

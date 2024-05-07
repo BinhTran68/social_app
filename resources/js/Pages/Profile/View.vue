@@ -6,9 +6,16 @@ import TabItem from "@/Pages/Profile/Partials/TabItem.vue";
 import Edit from "@/Pages/Profile/Edit.vue";
 import {computed, ref} from "vue";
 import Button from "@/Components/Button.vue";
+import CancelIcon from "@/Icon/CancelIcon.vue";
+import CameraIcon from "@/Icon/CameraIcon.vue";
+import CheckIcon from "@/Icon/CheckIcon.vue";
+import { reactive } from 'vue'
+import { router } from '@inertiajs/vue3'
 
 const authUser = usePage().props.auth.user
 const coverImageSrc = ref('');
+
+let coverImageFile = null;
 
 
 const props = defineProps({
@@ -24,15 +31,24 @@ const props = defineProps({
 })
 const isMyProfile = computed(() => (authUser && authUser.id === props.user.id))
 
-function onCoverChange(e) {
-    const  file = e.target.file[0]
-    if (file) {
+const onCoverChange = (event) => {
+    coverImageFile = event.target.files[0]
+    if (coverImageFile) {
         const reader = new FileReader()
         reader.onload = () => {
             coverImageSrc.value = reader.result
         }
-        reader.readAsDataURL(file)
+        reader.readAsDataURL(coverImageFile)
     }
+}
+
+const handleCancelSettingCoverImage = () => {
+    coverImageFile = null
+    coverImageSrc.value = ''
+}
+
+const handleSubmitCoverImage = () => {
+    console.log(1)
 }
 
 
@@ -45,23 +61,19 @@ function onCoverChange(e) {
 
 <template>
     <AuthenticatedLayout>
-        <pre>{{user}}</pre>
         <div class="container max-w-[928px] h-full mx-auto ">
             <div class="relative bg-white">
                 <img
-                    src="https://i0.wp.com/nftartwithlauren.com/wp-content/uploads/2023/11/laurenmcdonaghpereiraphoto_A_field_of_blooming_sunflowers_und_40d30d23-9ecd-489f-a2b9-5a8f7293af9a_0.png?fit=1024%2C574&ssl=1"
+                    :src="coverImageSrc || user.cover_url || '/img/default_cover_image.jpg'"
                     alt="cover photo"
                     class="object-cover  w-full h-[350px] "
                 >
-                <label for="cover-image" class="
+                <label v-if="!coverImageSrc" for="cover-image" class="
                 absolute top-72 right-2 bg-gray-50 px-2 py-1
                 rounded-md opacity-90 hover:bg-gray-200 cursor-pointer">
                    <span class="flex items-center justify-center gap-3">
-                        <span >
-                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
-                             </svg>
+                        <span>
+                             <CameraIcon className="w-4 h-4"/>
                         </span>
                        <span>
                            Update Cover Photo
@@ -69,6 +81,39 @@ function onCoverChange(e) {
                    </span>
                 </label>
                 <input type="file" @change="onCoverChange" name="cover-image" id="cover-image" hidden="">
+
+                <div v-if="coverImageSrc" class="flex flex-col gap-2 absolute top-64 right-2 " >
+                    <button
+                        @click="handleCancelSettingCoverImage"
+                        class="
+                         bg-gray-50 px-2 py-1
+                        rounded-md opacity-90 hover:bg-gray-200 cursor-pointer">
+                   <span class="flex items-center justify-center gap-3">
+                        <span>
+                            <CancelIcon className="w-5 h-5 text-red-500"/>
+                        </span>
+                       <span>
+                           Cancel
+                       </span>
+                   </span>
+                    </button>
+                    <button
+                        @click="handleSubmitCoverImage"
+                        class="
+                         bg-gray-50 px-2 py-1
+                         rounded-md opacity-90 hover:bg-gray-200 cursor-pointer">
+                   <span class="flex items-center justify-center gap-3">
+                        <span>
+                            <CheckIcon className="w-5 h-5 text-green-500"/>
+                        </span>
+                       <span>
+                           Submit
+                       </span>
+                   </span>
+                    </button>
+
+                </div>
+
                 <div class="flex py-5">
                     <img
                         src="https://i0.wp.com/nftartwithlauren.com/wp-content/uploads/2023/11/laurenmcdonaghpereiraphoto_A_field_of_blooming_sunflowers_und_40d30d23-9ecd-489f-a2b9-5a8f7293af9a_0.png?fit=1024%2C574&ssl=1"
