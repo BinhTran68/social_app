@@ -6,14 +6,20 @@ import TabItem from "@/Pages/Profile/Partials/TabItem.vue";
 import Edit from "@/Pages/Profile/Edit.vue";
 import {computed, ref} from "vue";
 import Button from "@/Components/Button.vue";
+import {BASE_URL, CLOUDINARY_NAME, CLOUDINARY_UPLOAD_PRESET} from "@/Utils/Constant.js"
 import CancelIcon from "@/Icon/CancelIcon.vue";
 import CameraIcon from "@/Icon/CameraIcon.vue";
 import CheckIcon from "@/Icon/CheckIcon.vue";
 import { reactive } from 'vue'
 import { router } from '@inertiajs/vue3'
+import axios from 'axios';
+import {da} from "vuetify/locale";
 
 const authUser = usePage().props.auth.user
 const coverImageSrc = ref('');
+
+const urlUploadCoverImagesCloudinary = `https://api.cloudinary.com/v1_1/${CLOUDINARY_NAME}/image/upload?folder=cover_images`
+const urlUploadAvatarImagesCloudinary = `https://api.cloudinary.com/v1_1/${CLOUDINARY_NAME}/image/upload?folder=avatar_images`
 
 let coverImageFile = null;
 
@@ -47,7 +53,31 @@ const handleCancelSettingCoverImage = () => {
     coverImageSrc.value = ''
 }
 
+
 const handleSubmitCoverImage = () => {
+    // Call api save image to cloud
+    const  formData = new FormData();
+    formData.append('file', coverImageFile)
+    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET)
+    axios.post(urlUploadCoverImagesCloudinary,
+        formData).then((response) => {
+        const urlImg = response.data.secure_url
+        const data =  {
+            url : urlImg,
+            type : 'cover'
+        }
+        axios.post(`${BASE_URL}/profile/update-images`, data).then((res) => {
+            console.log(res)
+        }).catch((e) => {
+            console.log(e)
+        })
+    }).catch((error) => {
+        console.log(error)
+    })
+
+
+
+    // Call api save image to databse
     console.log(1)
 }
 

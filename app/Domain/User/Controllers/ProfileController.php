@@ -3,6 +3,7 @@
 namespace App\Domain\User\Controllers;
 
 use App\Domain\User\Requests\ProfileUpdateRequest;
+use App\Domain\User\Requests\UploadImageProfileRequest;
 use App\Domain\User\Resources\UserResource;
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -75,11 +76,9 @@ class ProfileController extends Controller
         return Redirect::to('/');
     }
 
-    public function updateCover(Request $request)
+    public function updateImages(UploadImageProfileRequest $request)
     {
-        $data = $request->validate([
-            'file' => ['image']
-        ]);
-        dd($data);
+
+        dd($request);
     }
 }
