@@ -6,23 +6,14 @@ import TabItem from "@/Pages/Profile/Partials/TabItem.vue";
 import Edit from "@/Pages/Profile/Edit.vue";
 import {computed, ref} from "vue";
 import Button from "@/Components/Button.vue";
-import {BASE_URL, CLOUDINARY_NAME, CLOUDINARY_UPLOAD_PRESET} from "@/Utils/Constant.js"
+import {BASE_URL, CLOUDINARY_NAME, CLOUDINARY_UPLOAD_PRESET, uploadFileToCloud} from "@/Utils/Constant.js"
 import CancelIcon from "@/Icon/CancelIcon.vue";
 import CameraIcon from "@/Icon/CameraIcon.vue";
 import CheckIcon from "@/Icon/CheckIcon.vue";
-import { reactive } from 'vue'
-import { router } from '@inertiajs/vue3'
 import axios from 'axios';
-import {da} from "vuetify/locale";
-
-const authUser = usePage().props.auth.user
-const coverImageSrc = ref('');
-
-const urlUploadCoverImagesCloudinary = `https://api.cloudinary.com/v1_1/${CLOUDINARY_NAME}/image/upload?folder=cover_images`
-const urlUploadAvatarImagesCloudinary = `https://api.cloudinary.com/v1_1/${CLOUDINARY_NAME}/image/upload?folder=avatar_images`
-
-let coverImageFile = null;
-
+import WaitingSpinner from "@/Components/WaitingSpinner.vue";
+import Notification from "@/Components/Notification.vue";
+import {toast} from "vue3-toastify";
 
 const props = defineProps({
     mustVerifyEmail: {
@@ -35,6 +26,18 @@ const props = defineProps({
         type: Object
     }
 })
+const authUser = usePage().props.auth.user
+
+const coverImageSrc = ref('');
+let coverImageFile = null;
+const user = ref(props.user);
+const isLoading = ref(false);
+
+
+const urlUploadCoverImagesCloudinary = `https://api.cloudinary.com/v1_1/${CLOUDINARY_NAME}/image/upload?folder=cover_images`
+const urlUploadAvatarImagesCloudinary = `https://api.cloudinary.com/v1_1/${CLOUDINARY_NAME}/image/upload?folder=avatar_images`
+
+
 const isMyProfile = computed(() => (authUser && authUser.id === props.user.id))
 
 const onCoverChange = (event) => {
@@ -48,42 +51,40 @@ const onCoverChange = (event) => {
     }
 }
 
-const handleCancelSettingCoverImage = () => {
+const clearCoverImage = () => {
     coverImageFile = null
     coverImageSrc.value = ''
 }
+const showErrorToast = (error) => {
+    toast.error(error.response?.data?.message || 'Something went wrong!');
+};
 
-
-const handleSubmitCoverImage = () => {
-    // Call api save image to cloud
-    const  formData = new FormData();
+const handleSubmitCoverImage = async () => {
+    isLoading.value = true
+    const formData = new FormData();
     formData.append('file', coverImageFile)
     formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET)
-    axios.post(urlUploadCoverImagesCloudinary,
-        formData).then((response) => {
-        const urlImg = response.data.secure_url
-        const data =  {
-            url : urlImg,
-            type : 'cover'
-        }
-        axios.post(`${BASE_URL}/profile/update-images`, data).then((res) => {
-            console.log(res)
-        }).catch((e) => {
-            console.log(e)
-        })
-    }).catch((error) => {
-        console.log(error)
+    const url = await uploadFileToCloud(formData, 'cover_images');
+    if (url === null) {
+        toast.error("Something went wrong went ")
+        return
+    }
+    const data = {
+        url: url,
+        type: 'cover'
+    }
+    axios.post(`${BASE_URL}/profile/update-images`, data).then(({data}) => {
+        user.value = data
+        clearCoverImage()
+        isLoading.value = false
+        toast.success('Upload cover images successfully.');
+    }).catch((e) => {
+        clearCoverImage()
+        isLoading.value = false
+        showErrorToast(e)
     })
-
-
-
-    // Call api save image to databse
-    console.log(1)
 }
-
-
 </script>
-
 
 <style scoped>
 
@@ -91,6 +92,9 @@ const handleSubmitCoverImage = () => {
 
 <template>
     <AuthenticatedLayout>
+        <div v-if="isLoading">
+            <WaitingSpinner/>
+        </div>
         <div class="container max-w-[928px] h-full mx-auto ">
             <div class="relative bg-white">
                 <img
@@ -112,9 +116,9 @@ const handleSubmitCoverImage = () => {
                 </label>
                 <input type="file" @change="onCoverChange" name="cover-image" id="cover-image" hidden="">
 
-                <div v-if="coverImageSrc" class="flex flex-col gap-2 absolute top-64 right-2 " >
+                <div v-if="coverImageSrc" class="flex flex-col gap-2 absolute top-64 right-2 ">
                     <button
-                        @click="handleCancelSettingCoverImage"
+                        @click="clearCoverImage"
                         class="
                          bg-gray-50 px-2 py-1
                         rounded-md opacity-90 hover:bg-gray-200 cursor-pointer">
@@ -144,16 +148,31 @@ const handleSubmitCoverImage = () => {
 
                 </div>
 
-                <div class="flex py-5">
-                    <img
-                        src="https://i0.wp.com/nftartwithlauren.com/wp-content/uploads/2023/11/laurenmcdonaghpereiraphoto_A_field_of_blooming_sunflowers_und_40d30d23-9ecd-489f-a2b9-5a8f7293af9a_0.png?fit=1024%2C574&ssl=1"
-                        alt="cover photo"
-                        class="
-                        w-[173px]
-                        h-[173px]
+                <div class="flex py-5 relative">
+                     <span class="top-12 left-48 absolute border-[2px] flex items-center justify-center w-9 h-9 bg-gray-100 rounded-full">
+                         <CameraIcon className="w-6 h-6"/>
+                     </span>
+                    <div class="
+                    border-[5px]
+
+                    rounded-full
+                    w-[183px]
+                    h-[183px]
+                    -mt-[100px]
+                    ml-[48px]
+
+                    ">
+                        <img
+                            src="https://i0.wp.com/nftartwithlauren.com/wp-content/uploads/2023/11/laurenmcdonaghpereiraphoto_A_field_of_blooming_sunflowers_und_40d30d23-9ecd-489f-a2b9-5a8f7293af9a_0.png?fit=1024%2C574&ssl=1"
+                            alt="cover photo"
+                            class="
+                        rounded-full
+                        w-full
+                        h-full
                         object-cover
-                        rounded-full ml-[48px] -mt-[100px]"
-                    >
+                        "
+                        >
+                    </div>
                     <div class="flex justify-between items-center p-3">
                         <h1 class="font-bold text-lg">
                             {{ user.name }}
@@ -234,6 +253,3 @@ const handleSubmitCoverImage = () => {
     </AuthenticatedLayout>
 
 </template>
-
-
-

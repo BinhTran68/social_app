@@ -2,6 +2,7 @@
 
 namespace App\Domain\User\Controllers;
 
+use App\Domain\User\Action\UpdateImages;
 use App\Domain\User\Requests\ProfileUpdateRequest;
 use App\Domain\User\Requests\UploadImageProfileRequest;
 use App\Domain\User\Resources\UserResource;
@@ -63,22 +64,18 @@ class ProfileController extends Controller
         $request->validate([
             'password' => ['required', 'current_password'],
         ]);
-
         $user = $request->user();
-
         Auth::logout();
-
         $user->delete();
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
         return Redirect::to('/');
     }
 
-    public function updateImages(UploadImageProfileRequest $request)
+    public function updateImages(UploadImageProfileRequest $request, UpdateImages $updateImages)
     {
-
-        dd($request);
+        $user = auth()->user();
+        $user =  $updateImages->handle($request, $user);
+        return UserResource::make($user);
     }
 }
