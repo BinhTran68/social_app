@@ -6,13 +6,12 @@ import TabItem from "@/Pages/Profile/Partials/TabItem.vue";
 import Edit from "@/Pages/Profile/Edit.vue";
 import {computed, ref} from "vue";
 import Button from "@/Components/Button.vue";
-import {BASE_URL, CLOUDINARY_NAME, CLOUDINARY_UPLOAD_PRESET, uploadFileToCloud} from "@/Utils/Constant.js"
+import {BASE_URL, CLOUDINARY_UPLOAD_PRESET, uploadFileToCloud} from "@/Utils/Constant.js"
 import CancelIcon from "@/Icon/CancelIcon.vue";
 import CameraIcon from "@/Icon/CameraIcon.vue";
 import CheckIcon from "@/Icon/CheckIcon.vue";
 import axios from 'axios';
 import WaitingSpinner from "@/Components/WaitingSpinner.vue";
-import Notification from "@/Components/Notification.vue";
 import {toast} from "vue3-toastify";
 
 const props = defineProps({
@@ -26,20 +25,21 @@ const props = defineProps({
         type: Object
     }
 })
+// Auth Variable
 const authUser = usePage().props.auth.user
 
+// Cover Images Variable
 const coverImageSrc = ref('');
 let coverImageFile = null;
+
+// Avatar Images Variable
+const avatarImageSrc = ref('');
+let avatarImageFile = null;
+
 const user = ref(props.user);
 const isLoading = ref(false);
 
-
-const urlUploadCoverImagesCloudinary = `https://api.cloudinary.com/v1_1/${CLOUDINARY_NAME}/image/upload?folder=cover_images`
-const urlUploadAvatarImagesCloudinary = `https://api.cloudinary.com/v1_1/${CLOUDINARY_NAME}/image/upload?folder=avatar_images`
-
-
 const isMyProfile = computed(() => (authUser && authUser.id === props.user.id))
-
 const onCoverChange = (event) => {
     coverImageFile = event.target.files[0]
     if (coverImageFile) {
@@ -67,6 +67,7 @@ const handleSubmitCoverImage = async () => {
     const url = await uploadFileToCloud(formData, 'cover_images');
     if (url === null) {
         toast.error("Something went wrong went ")
+        isLoading.value = false
         return
     }
     const data = {
@@ -84,6 +85,55 @@ const handleSubmitCoverImage = async () => {
         showErrorToast(e)
     })
 }
+
+
+const onAvatarChange = (event) => {
+    avatarImageFile = event.target.files[0]
+    if (avatarImageFile) {
+        const reader = new FileReader()
+        reader.onload = () => {
+            avatarImageSrc.value = reader.result
+        }
+        reader.readAsDataURL(avatarImageFile)
+    }
+}
+
+const clearAvatarImage = () => {
+    avatarImageFile = null
+    avatarImageSrc.value = ''
+}
+
+
+
+const handleSubmitChangeAvatar = async () => {
+    isLoading.value = true
+    const formData = new FormData();
+    formData.append('file', avatarImageFile)
+    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET)
+    const url = await uploadFileToCloud(formData, 'avatar-images');
+    if (url === null) {
+        toast.error("Something went wrong !")
+        clearAvatarImage()
+        isLoading.value = false
+        return
+    }
+    const data = {
+        url: url,
+        type: 'avatar'
+    }
+    axios.post(`${BASE_URL}/profile/update-images`, data).then(({data}) => {
+        user.value = data
+        clearAvatarImage()
+        isLoading.value = false
+        toast.success('Upload cover images successfully.');
+    }).catch((e) => {
+        clearAvatarImage()
+        isLoading.value = false
+        showErrorToast(e)
+    })
+}
+
+
 </script>
 
 <style scoped>
@@ -145,26 +195,65 @@ const handleSubmitCoverImage = async () => {
                        </span>
                    </span>
                     </button>
-
                 </div>
 
                 <div class="flex py-5 relative">
-                     <span class="top-12 left-48 absolute border-[2px] flex items-center justify-center w-9 h-9 bg-gray-100 rounded-full">
-                         <CameraIcon className="w-6 h-6"/>
-                     </span>
-                    <div class="
-                    border-[5px]
+                    <div v-if="avatarImageSrc" class="flex -top-6 z-10 left-24 flex-col gap-2 absolute ">
+                        <button
+                            @click="handleSubmitChangeAvatar"
+                            class="
+                         bg-gray-50 px-2 py-1
+                         rounded-md opacity-90 hover:bg-gray-200 cursor-pointer">
+                            <span class="flex items-center justify-center gap-3">
+                                <span>
+                            <CheckIcon className="w-5 h-5 text-green-500"/>
+                                </span>
+                             <span>
+                           Submit
+                            </span>
+                            </span>
+                        </button>
+                        <button
+                            @click="clearAvatarImage"
+                            class="
+                         bg-gray-50 px-2 py-1
+                        rounded-md opacity-90 hover:bg-gray-200 cursor-pointer">
+                   <span class="flex items-center justify-center gap-3">
+                        <span>
+                            <CancelIcon className="w-5 h-5 text-red-500"/>
+                        </span>
+                       <span>
+                           Cancel
+                       </span>
+                   </span>
+                        </button>
 
+                    </div>
+                    <label
+                        v-if="!avatarImageSrc"
+                        for="avatar-image"
+                        class="top-12 left-48
+                         absolute border-[2px] flex
+                         items-center justify-center
+                         w-9 h-9 bg-gray-100
+                         rounded-full">
+                        <CameraIcon className="w-6 h-6"/>
+                    </label>
+                    <input type="file"
+                           @change="onAvatarChange"
+                           name="avatar-image"
+                           id="avatar-image" hidden="">
+                    <div class="
+                    border-[3px]
                     rounded-full
                     w-[183px]
                     h-[183px]
                     -mt-[100px]
                     ml-[48px]
-
                     ">
                         <img
-                            src="https://i0.wp.com/nftartwithlauren.com/wp-content/uploads/2023/11/laurenmcdonaghpereiraphoto_A_field_of_blooming_sunflowers_und_40d30d23-9ecd-489f-a2b9-5a8f7293af9a_0.png?fit=1024%2C574&ssl=1"
-                            alt="cover photo"
+                            :src="avatarImageSrc || user.avatar_url || '/img/default_avatar_image.png' "
+                            alt="avatar photo"
                             class="
                         rounded-full
                         w-full
@@ -173,6 +262,21 @@ const handleSubmitCoverImage = async () => {
                         "
                         >
                     </div>
+
+<!--                  Overlay avatar -->
+                    <div
+                        v-if="avatarImageSrc"
+                        class="
+                            absolute
+                            inset-0 bg-black
+                            border-[3px]
+                            rounded-full
+                            w-[183px]
+                            h-[183px]
+                            -mt-[80px]
+                            ml-[48px]
+                            opacity-30">
+                    </div>
                     <div class="flex justify-between items-center p-3">
                         <h1 class="font-bold text-lg">
                             {{ user.name }}
@@ -180,9 +284,6 @@ const handleSubmitCoverImage = async () => {
                     </div>
                 </div>
 
-                <div>
-
-                </div>
             </div>
             <div class="border-t">
                 <TabGroup>

@@ -16,7 +16,7 @@ class UpdateImages
         if ($request->input('type') == 'cover') {
             $user->cover_path = $request->input('url');
         }
-        if ($request->input('type') == 'avatar_path') {
+        if ($request->input('type') == 'avatar') {
             $user->avatar_path = $request->input('url');
         }
         $user->save();
