@@ -10,7 +10,9 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 const drawer = ref(true)
 const rail = ref(true)
 
-defineProps({});
+defineProps({
+    posts :  Object
+});
 
 
 function handleImageError() {
@@ -24,7 +26,7 @@ function handleImageError() {
 <template>
     <Head title="Socical Media Website"/>
     <AuthenticatedLayout>
-        <div class="grid md:grid-cols-12 gap-3 relative">
+        <div class="grid md:grid-cols-12 gap-3 relative py-5">
             <div class="md:col-span-3 ">
                 Some thing code here
             </div>
