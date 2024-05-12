@@ -16,7 +16,6 @@ const authUser = usePage().props.auth.user
 
 
 </script>
-
 <template>
     <div class="">
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900 z-50">
@@ -162,20 +161,9 @@ const authUser = usePage().props.auth.user
                     <slot name="header" />
                 </div>
             </header>
-
-            <div class="grid md:grid-cols-12 gap-3 relative py-5 mt-[64px] " >
-                <div class="md:col-span-3 sticky ">
-                    <FollowingList/>
-                </div>
-                <div class="md:col-span-3 md:order-3 px-5  flex-1 ">
-                    <FollowingList/>
-                </div>
-                <div class="md:col-span-6 md:order-2 flex flex-col gap-3 overflow-hidden ">
-                    <main class="">
-                        <slot />
-                    </main>
-                </div>
-            </div>
+            <main class="mt-[64px]">
+                <slot />
+            </main>
 
         </div>
     </div>

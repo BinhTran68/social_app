@@ -1,7 +1,7 @@
 <script setup>
 import {usePage} from "@inertiajs/vue3";
 import {TabGroup, TabList, Tab, TabPanels, TabPanel} from '@headlessui/vue'
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+
 import TabItem from "@/Pages/Profile/Partials/TabItem.vue";
 import Edit from "@/Pages/Profile/Edit.vue";
 import {computed, ref} from "vue";
@@ -13,6 +13,7 @@ import CheckIcon from "@/Icon/CheckIcon.vue";
 import axios from 'axios';
 import WaitingSpinner from "@/Components/WaitingSpinner.vue";
 import {toast} from "vue3-toastify";
+import AuthenticatedLayoutFullScreen from "@/Layouts/AuthenticatedLayoutFullScreen.vue";
 
 const props = defineProps({
     mustVerifyEmail: {
@@ -141,7 +142,7 @@ const handleSubmitChangeAvatar = async () => {
 </style>
 
 <template>
-    <AuthenticatedLayout>
+    <AuthenticatedLayoutFullScreen>
         <div v-if="isLoading">
             <WaitingSpinner/>
         </div>
@@ -351,6 +352,6 @@ const handleSubmitChangeAvatar = async () => {
                 </TabGroup>
             </div>
         </div>
-    </AuthenticatedLayout>
+    </AuthenticatedLayoutFullScreen>
 
 </template>

@@ -1,6 +1,12 @@
 <script setup>
    import PostItem from "@/Pages/client/Post/PostItem.vue";
 
+   const props = defineProps({
+       posts : {
+           type : Array
+       }
+   })
+
    const post1 = {
        user: {
            id : 1,
@@ -81,7 +87,7 @@
 
 <template>
     <div class="flex flex-col gap-3">
-        <PostItem :post="post1"/>
+        <PostItem v-for="post of props.posts" :post="post"/>
         <PostItem :post="post2"/>
         <PostItem :post="post3"/>
     </div>

@@ -2,6 +2,7 @@
 
 namespace App\Domain\Home\Controllers;
 
+use App\Domain\Post\Resources\PostResource;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use Illuminate\Http\Request;
@@ -13,7 +14,7 @@ class HomeController extends Controller
     {
         $posts = Post::query()->paginate(20);
         return Inertia::render('client/Home/Home', [
-            'posts' => $posts
+            'posts' => PostResource::collection($posts)
         ]);
     }
 }

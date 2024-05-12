@@ -26,17 +26,10 @@ function handleImageError() {
 <template>
     <Head title="Socical Media Website"/>
     <AuthenticatedLayout>
-        <div class="grid md:grid-cols-12 gap-3 relative py-5">
-            <div class="md:col-span-3 ">
-                Some thing code here
-            </div>
-            <div class="md:col-span-3 md:order-3 px-5  flex-1 ">
-                <FollowingList/>
-            </div>
-            <div class="md:col-span-6 md:order-2 flex flex-col gap-3 overflow-hidden ">
+            <pre>
+                {{posts}}
+            </pre>
                 <CreatePost/>
-                <PostsList/>
-            </div>
-        </div>
+                <PostsList :posts="posts.data"/>
     </AuthenticatedLayout>
 </template>

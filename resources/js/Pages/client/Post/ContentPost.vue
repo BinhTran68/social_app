@@ -19,8 +19,8 @@ defineProps({
     <div class="">
         <div class="px-8 ">
             <Disclosure  v-slot="{open}">
-                <div v-if="!open" v-html="body.length > lenghtDisplay ?  body.substring(0,100)+ '...' : body"/>
-                <div v-if="body.length > lenghtDisplay">
+                <div v-if="!open" v-html="body && body.length > lenghtDisplay ?  body.substring(0,100)+ '...' : body"/>
+                <div v-if="body && body.length > lenghtDisplay">
                     <DisclosurePanel class="flex justify-end" v-if="open" static>
                         <div v-html="body"></div>
                     </DisclosurePanel>

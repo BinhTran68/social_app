@@ -1,6 +1,7 @@
 <?php
 
 use App\Domain\Home\Controllers\HomeController;
+use App\Domain\Post\Controllers\PostController;
 use App\Domain\User\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -23,6 +24,11 @@ Route::middleware('auth')->group(function () {
         ->name('profile.update-cover');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::post('/posts', [PostController::class, 'store'])->name('post.create');
+
+
+
 });
 
 require __DIR__.'/auth.php';
