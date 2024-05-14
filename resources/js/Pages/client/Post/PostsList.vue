@@ -88,8 +88,8 @@
 <template>
     <div class="flex flex-col gap-3">
         <PostItem v-for="post of props.posts" :post="post"/>
-        <PostItem :post="post2"/>
-        <PostItem :post="post3"/>
+<!--        <PostItem :post="post2"/>-->
+<!--        <PostItem :post="post3"/>-->
     </div>
 </template>
 

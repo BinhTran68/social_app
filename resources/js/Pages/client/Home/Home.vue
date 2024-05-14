@@ -26,9 +26,6 @@ function handleImageError() {
 <template>
     <Head title="Socical Media Website"/>
     <AuthenticatedLayout>
-            <pre>
-                {{posts}}
-            </pre>
                 <CreatePost/>
                 <PostsList :posts="posts.data"/>
     </AuthenticatedLayout>

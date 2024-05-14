@@ -11,7 +11,9 @@ class UpdatePostRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        //  Todo maybe change latter
+        $user = $this -> user();
+        return true;
     }
 
     /**
