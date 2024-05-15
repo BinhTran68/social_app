@@ -39,8 +39,11 @@ function submit() {
         id : props.post.id,
         body : props.post.body
     })
-
-    form.post(route('post.update'))
+    form.put(route('post.update', props.post), {
+        onSuccess: () => {
+            show.value = false
+        }
+    })
 }
 
 </script>
