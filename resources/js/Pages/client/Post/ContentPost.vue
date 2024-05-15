@@ -1,9 +1,7 @@
 <script setup>
 
 import {Disclosure, DisclosureButton, DisclosurePanel} from "@headlessui/vue";
-import CarouselComponent from "@/Components/CarouselComponent.vue";
-import CarouselCustorm from "@/Components/CarouselCustorm.vue";
-import ActionPost from "@/Pages/client/Post/ActionPost.vue";
+import CarouselIamgeCustom from "@/Components/CarouselIamgeCustom.vue";
 
 const lenghtDisplay = 120;
 
@@ -28,17 +26,18 @@ defineProps({
                         <span class="text-blue-600">
                             {{ open ? 'Read Less' : 'Read More' }}
                         </span>
-
                     </DisclosureButton>
                 </div>
             </Disclosure>
         </div>
         <div v-if="media" class="max-w-[500px] mt-3 mx-auto flex flex-col gap-2">
-            <CarouselCustorm :media="media"/>
+            <CarouselIamgeCustom :media="media"/>
         </div>
     </div>
 </template>
 
 <style scoped>
-
+  a {
+      color: #2563eb;
+  }
 </style>

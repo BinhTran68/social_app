@@ -6,7 +6,7 @@ import TabItem from "@/Pages/Profile/Partials/TabItem.vue";
 import Edit from "@/Pages/Profile/Edit.vue";
 import {computed, ref} from "vue";
 import Button from "@/Components/Button.vue";
-import {BASE_URL, CLOUDINARY_UPLOAD_PRESET, uploadFileToCloud} from "@/Utils/Constant.js"
+import {BASE_URL, CLOUDINARY_UPLOAD_PRESET} from "@/Utils/Constant.js"
 import CancelIcon from "@/Icon/CancelIcon.vue";
 import CameraIcon from "@/Icon/CameraIcon.vue";
 import CheckIcon from "@/Icon/CheckIcon.vue";
@@ -14,6 +14,7 @@ import axios from 'axios';
 import WaitingSpinner from "@/Components/WaitingSpinner.vue";
 import {toast} from "vue3-toastify";
 import AuthenticatedLayoutFullScreen from "@/Layouts/AuthenticatedLayoutFullScreen.vue";
+import { uploadFileToCloud } from "@/Utils/utils.js";
 
 const props = defineProps({
     mustVerifyEmail: {

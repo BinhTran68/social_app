@@ -13,6 +13,7 @@ import XmarkIcon from "@/Icon/XmarkIcon.vue";
 import {router, useForm} from "@inertiajs/vue3";
 
 
+
 const  props = defineProps({
     post: {
         type: Object,
