@@ -8,15 +8,29 @@ import {formatDate} from "@/Utils/utils.js";
 
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
 import EllipsisVerticalIcon from "@/Icon/Ellipsis-VerticalIcon.vue";
-import {ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 import PostUserHeader from "@/Pages/client/Post/PostUserHeader.vue";
 import PostModal from "@/Pages/client/Post/PostEditModal.vue";
+import {router, usePage} from "@inertiajs/vue3";
 
-const showEditModal =  ref(false)
-
-defineProps({
+const  props = defineProps({
     post: Object
 })
+const post_owner = props.post.user
+const authUser = usePage().props.auth.user
+const showEditModal =  ref(false)
+
+
+const isMyPost = computed(() => (authUser && authUser.id === post_owner.id))
+
+const deletePost = () => {
+    if (window.confirm('Are you sure you want to delete this post ?')) {
+        router.delete(route('post.destroy', props.post), {
+            preserveScroll: true
+        })
+    }
+}
+
 </script>
 
 <template>
@@ -43,7 +57,7 @@ defineProps({
                             class="absolute right-0 mt-2 w-32 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none"
                         >
                             <div class="px-1 py-1">
-                                <MenuItem v-slot="{ active }">
+                                <MenuItem  v-slot="{ active }">
                                     <button
                                         @click="showEditModal = true"
                                         :class="[
@@ -54,12 +68,13 @@ defineProps({
                                         Edit
                                     </button>
                                 </MenuItem>
-                                <MenuItem v-slot="{ active }">
+                                <MenuItem   v-slot="{ active }">
                                     <button
                                         :class="[
                                  active ? 'bg-indigo-500 text-white' : 'text-red-700',
                                 'group flex w-full items-center rounded-md px-2 py-2 text-sm ',
                                     ]"
+                                        @click="deletePost"
                                     >
                                         Delete
                                     </button>

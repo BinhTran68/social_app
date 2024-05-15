@@ -42,6 +42,9 @@ function submit() {
     form.put(route('post.update', props.post), {
         onSuccess: () => {
             show.value = false
+        },
+        onError : (errors) => {
+            console.log(errors)
         }
     })
 }

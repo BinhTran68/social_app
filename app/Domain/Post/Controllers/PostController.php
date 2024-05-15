@@ -2,6 +2,7 @@
 
 namespace App\Domain\Post\Controllers;
 
+use App\Domain\Post\Actions\DeletePostAction;
 use App\Domain\Post\Requests\StorePostRequest;
 use App\Domain\Post\Requests\UpdatePostRequest;
 use App\Http\Controllers\Controller;
@@ -64,8 +65,8 @@ class PostController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Post $post)
+    public function destroy(Post $post, DeletePostAction $deletePostAction)
     {
-        //
+        return $deletePostAction->handle($post);
     }
 }
