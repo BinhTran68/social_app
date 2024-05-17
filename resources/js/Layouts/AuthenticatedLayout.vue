@@ -10,6 +10,7 @@ import PostsList from "@/Pages/client/Post/PostsList.vue";
 import FollowingList from "@/Pages/client/Home/components/FollowingList.vue";
 import CreatePost from "@/Pages/client/Post/CreatePost.vue";
 
+
 const showingNavigationDropdown = ref(false);
 
 const authUser = usePage().props.auth.user
@@ -132,7 +133,10 @@ const authUser = usePage().props.auth.user
                     class="sm:hidden"
                 >
                     <div class="pt-2 pb-3 space-y-1">
-                        <ResponsiveNavLink v-if="authUser" :href="route('profile', {username:  authUser.name})" :active="route().current('dashboard')">
+                        <ResponsiveNavLink
+                            v-if="authUser"
+                            :href="route('profile', {username:  authUser.name})"
+                            :active="route().current('/')">
                             Dashboard
                         </ResponsiveNavLink>
                     </div>
@@ -164,13 +168,13 @@ const authUser = usePage().props.auth.user
             </header>
 
             <div class="grid md:grid-cols-12 gap-3 relative py-5 mt-[64px] " >
-                <div class="md:col-span-3 sticky ">
+                <div class="md:col-span-4 sticky ">
                     <FollowingList/>
                 </div>
-                <div class="md:col-span-3 md:order-3 px-5  flex-1 ">
+                <div class="md:col-span-4 md:order-3 px-5  flex-1 ">
                     <FollowingList/>
                 </div>
-                <div class="md:col-span-6 md:order-2 flex flex-col gap-3 overflow-hidden ">
+                <div class="md:col-span-4 md:order-2 flex flex-col gap-3 overflow-hidden ">
                     <main class="">
                         <slot />
                     </main>

@@ -19,12 +19,13 @@
         "vue": "^3.4.0"
     },
     "dependencies": {
-        "@ckeditor/ckeditor5-build-classic": "^41.3.1",
+        "@ckeditor/ckeditor5-build-classic": "^41.4.1",
         "@ckeditor/ckeditor5-vue": "^5.1.0",
         "@cloudinary/url-gen": "^1.19.0",
         "@cloudinary/vue": "^1.12.1",
         "@headlessui/vue": "^1.7.21",
         "@mdi/font": "^7.4.47",
+        "@vueup/vue-quill": "^1.2.0",
         "clsx": "^2.1.1",
         "material-design-icons-iconfont": "^6.7.0",
         "tailwind-merge": "^2.3.0",

@@ -14,7 +14,6 @@ const showingNavigationDropdown = ref(false);
 
 const authUser = usePage().props.auth.user
 
-
 </script>
 <template>
     <div class="">

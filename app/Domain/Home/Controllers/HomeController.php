@@ -12,7 +12,7 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
-        $posts = Post::query()->paginate(20);
+        $posts = Post::query()->orderBy('created_at', 'desc')->paginate(20);
         return Inertia::render('client/Home/Home', [
             'posts' => PostResource::collection($posts)
         ]);

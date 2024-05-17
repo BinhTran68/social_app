@@ -38,28 +38,31 @@ const emitDeleteEvent = (index) => {
 </script>
 
 <template>
-    <v-carousel :show-arrows="isSingleSlide && 'hover'"
-                progress
-                hide-delimiters
-                progress-color="#F3382E"
-    >
-        <v-carousel-item
-            v-for="(src, index) in media"
-            :src="src.url"
-            cover
+    <v-row>
+        <v-col
+            v-for="(image, index) in media"
+            :key="index"
+            class="d-flex child-flex"
+            cols="4"
         >
-            <div v-show="props.isCreate">
-                <span @click="emitDeleteEvent(index)">
+            <v-img
+                :lazy-src="image.url"
+                :src="image.url"
+                aspect-ratio="1"
+                class="bg-grey-lighten-2"
+                cover
+            >
+                 <span @click="emitDeleteEvent(index)">
                     <XmarkIcon :className="['' +
                      'w-6 h-6 p-1 mt-2 float-end me-2 ' +
                      'bg-gray-50 rounded-full opacity-80 ' +
                      'hover:opacity-100 cursor-pointer' +
                      '']"/>
                 </span>
-            </div>
+            </v-img>
+        </v-col>
+    </v-row>
 
-        </v-carousel-item>
-    </v-carousel>
 </template>
 
 <style scoped>

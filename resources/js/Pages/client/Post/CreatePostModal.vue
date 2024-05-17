@@ -1,5 +1,5 @@
 <script setup>
-import {computed, ref} from 'vue'
+import {computed, ref, watch, watchEffect} from 'vue'
 import {
     TransitionRoot,
     TransitionChild,
@@ -10,7 +10,7 @@ import {
 import InputTextarea from "@/Components/InputTextarea.vue";
 import PostUserHeader from "@/Pages/client/Post/PostUserHeader.vue";
 import XmarkIcon from "@/Icon/XmarkIcon.vue";
-import {router, useForm} from "@inertiajs/vue3";
+import {router, useForm, usePage} from "@inertiajs/vue3";
 import VideoIcon from "@/Icon/VideoIcon.vue";
 import CarouselIamgeCustom from "@/Components/CarouselIamgeCustom.vue";
 import ImageIcon from "@/Icon/ImageIcon.vue";
@@ -19,19 +19,35 @@ import SmileIcon from "@/Icon/SmileIcon.vue";
 import CancelIcon from "@/Icon/CancelIcon.vue";
 import LocationMapIcon from "@/Icon/LocationMapIcon.vue";
 import {isImage} from "@/Utils/utils.js";
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import DetailsImagesPost from "@/Components/DetailsImagesPost.vue";
 
-const isShowCreatePost = ref(false)
+
+const  editor = ClassicEditor
+
+const editorConfig =  {
+    toolbar: [  'undo', 'redo',
+        'heading',
+        'bold', 'italic',
+        'link', 'blockQuote',
+        'bulletedList', 'numberedList', 'outdent', 'indent']
+}
+
+const authUser = usePage().props.auth.user
 
 const attachmentFiles = ref([])
 
 const newPostForm = useForm({
-    body: ''
+    body: '',
+    attachments : []
 })
 
 const handleOnCreatePost = () => {
     newPostForm.post(route('post.create'), {
         onSuccess: () => {
             newPostForm.reset()
+            show.value = false
+            resetValues()
         },
         onError: (e) => {
             console.log(e.body)
@@ -54,9 +70,11 @@ const show = computed({
 })
 function closeModal() {
     show.value = false
+    resetValues()
 }
-const handleExitCreatePost = () => {
-    isShowCreatePost.value = false
+
+const resetValues = () => {
+    newPostForm.body = ''
     attachmentFiles.value = []
 }
 
@@ -72,6 +90,7 @@ const onSelectImages = async (e) => {
         }
     }
 }
+
 const readFile = (file) => {
     return new Promise((res, req) => {
         const reader = new FileReader();
@@ -83,6 +102,14 @@ const readFile = (file) => {
     })
 }
 
+const handleDeleteImage = (index) => {
+    attachmentFiles.value = attachmentFiles.value.filter((_, i) => i !== index);
+};
+
+
+watchEffect(() => {
+    console.log(attachmentFiles)
+})
 
 </script>
 <template>
@@ -121,11 +148,19 @@ const readFile = (file) => {
                             >
                                 <DialogTitle
                                     as="h3"
-                                    class="text-lg font-medium leading-6 text-gray-900 flex items-center justify-between"
+                                    class="
+                                    text-lg
+                                    font-medium
+                                    leading-6
+                                    text-gray-900
+                                    flex items-center
+
+                                    justify-between"
                                 >
-                                    <span >
+                                    <span>
                                         Create Post
                                     </span>
+
                                     <span
                                         @click="closeModal"
                                         class="cursor-pointer hover:opacity-50" >
@@ -137,7 +172,7 @@ const readFile = (file) => {
                                         <div class="px-6 py-3 bg-white rounded-md relative">
                                             <hr>
                                             <div class="py-5 flex flex-col gap-5">
-                                                <InputTextarea v-model="newPostForm.body"/>
+                                                <ckeditor :class="['rounded-md']" :editor="editor" v-model="newPostForm.body" :config="editorConfig"></ckeditor>
                                                 <div class="border py-2 px-3 rounded-md flex items-center justify-between">
                                                     <h6 class="font-bold">Add to your post</h6>
                                                     <div class="flex items-center justify-center gap-3">
@@ -162,7 +197,11 @@ const readFile = (file) => {
                                                     </div>
                                                 </div>
                                                 <div class="px-1">
-                                                    <CarouselIamgeCustom v-if="attachmentFiles.length > 0" :media="attachmentFiles"/>
+                                                    <DetailsImagesPost
+                                                        @handle-delete-image="handleDeleteImage"
+                                                        v-if="attachmentFiles.length > 0"
+                                                        :media="attachmentFiles"/>
+
                                                 </div>
                                             </div>
                                             <Button

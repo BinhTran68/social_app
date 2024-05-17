@@ -11,6 +11,7 @@ import CKEditor from '@ckeditor/ckeditor5-vue';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
+
 /* // vuetify UI */
 import 'vuetify/dist/vuetify.min.css';
 import 'vuetify/styles'
@@ -31,8 +32,8 @@ createInertiaApp({
     setup({ el, App, props, plugin }) {
         return createApp({ render: () => h(App, props) })
             .use(plugin)
-            .use( CKEditor )
             .use(ZiggyVue)
+            .use( CKEditor  )
             .use(vuetify)  // vuetify UI
             .use(Vue3Toasity, {
                 autoClose: 3000,
