@@ -4,6 +4,7 @@ namespace App\Domain\Post\Resources;
 
 use App\Domain\User\Resources\UserResource;
 use App\Models\Post;
+use App\Models\PostAttachment;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -29,7 +30,7 @@ class PostResource extends JsonResource
             'created_at' => $this->resource->created_at,
             'user' =>   new UserResource($this->resource->user),
             'group' => $this->resource->group(),
-            'attachments' =>  $this->resource->attachments()
+            'attachments' =>  PostAttachmentResource::collection($this->resource->attachments)
         ];
     }
 }

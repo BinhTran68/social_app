@@ -6,6 +6,8 @@ use App\Models\Post;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
+
+
 class UpdatePostRequest extends FormRequest
 {
     /**

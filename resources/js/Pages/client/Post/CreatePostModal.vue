@@ -43,6 +43,9 @@ const newPostForm = useForm({
 })
 
 const handleOnCreatePost = () => {
+    newPostForm.attachments = attachmentFiles.value.map((myFile) => {
+        return myFile.file
+    })
     newPostForm.post(route('post.create'), {
         onSuccess: () => {
             newPostForm.reset()
@@ -173,6 +176,12 @@ watchEffect(() => {
                                             <hr>
                                             <div class="py-5 flex flex-col gap-5">
                                                 <ckeditor :class="['rounded-md']" :editor="editor" v-model="newPostForm.body" :config="editorConfig"></ckeditor>
+                                                <div class="px-1">
+                                                    <DetailsImagesPost
+                                                        @handle-delete-image="handleDeleteImage"
+                                                        v-if="attachmentFiles.length > 0"
+                                                        :media="attachmentFiles"/>
+                                                </div>
                                                 <div class="border py-2 px-3 rounded-md flex items-center justify-between">
                                                     <h6 class="font-bold">Add to your post</h6>
                                                     <div class="flex items-center justify-center gap-3">
@@ -196,13 +205,7 @@ watchEffect(() => {
                             </span>
                                                     </div>
                                                 </div>
-                                                <div class="px-1">
-                                                    <DetailsImagesPost
-                                                        @handle-delete-image="handleDeleteImage"
-                                                        v-if="attachmentFiles.length > 0"
-                                                        :media="attachmentFiles"/>
 
-                                                </div>
                                             </div>
                                             <Button
                                                 @click="handleOnCreatePost"

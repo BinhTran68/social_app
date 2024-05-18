@@ -87,7 +87,7 @@ const deletePost = () => {
 
         </div>
         <div class="flex flex-col gap-3">
-            <ContentPost :body="post.body" :media="post.media"/>
+            <ContentPost :body="post.body" :media="post.attachments"/>
             <div class="flex items-center mx-5 justify-start gap-5 ">
                 <HeartIcon  className="w-8 " />
                 <CommentIcon />

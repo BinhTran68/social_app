@@ -167,14 +167,14 @@ const authUser = usePage().props.auth.user
                 </div>
             </header>
 
-            <div class="grid md:grid-cols-12 gap-3 relative py-5 mt-[64px] " >
-                <div class="md:col-span-4 sticky ">
+            <div class="grid lg:grid-cols-12 gap-3 relative py-5 mt-[64px] " >
+                <div class="lg:col-span-4 sticky ">
                     <FollowingList/>
                 </div>
-                <div class="md:col-span-4 md:order-3 px-5  flex-1 ">
+                <div class="lg:col-span-4 md:order-3 px-5  flex-1 ">
                     <FollowingList/>
                 </div>
-                <div class="md:col-span-4 md:order-2 flex flex-col gap-3 overflow-hidden ">
+                <div class="lg:col-span-4 md:order-2 flex flex-col gap-3 overflow-hidden ">
                     <main class="">
                         <slot />
                     </main>

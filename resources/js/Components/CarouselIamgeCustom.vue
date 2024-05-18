@@ -44,20 +44,10 @@ const emitDeleteEvent = (index) => {
                 progress-color="#F3382E"
     >
         <v-carousel-item
-            v-for="(src, index) in media"
+            v-for="(src) in media"
             :src="src.url"
             cover
         >
-            <div v-show="props.isCreate">
-                <span @click="emitDeleteEvent(index)">
-                    <XmarkIcon :className="['' +
-                     'w-6 h-6 p-1 mt-2 float-end me-2 ' +
-                     'bg-gray-50 rounded-full opacity-80 ' +
-                     'hover:opacity-100 cursor-pointer' +
-                     '']"/>
-                </span>
-            </div>
-
         </v-carousel-item>
     </v-carousel>
 </template>

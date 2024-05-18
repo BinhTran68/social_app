@@ -2,6 +2,7 @@
 
 namespace App\Domain\Post\Controllers;
 
+use App\Domain\Post\Actions\CreatePost;
 use App\Domain\Post\Actions\DeletePostAction;
 use App\Domain\Post\Requests\StorePostRequest;
 use App\Domain\Post\Requests\UpdatePostRequest;
@@ -30,11 +31,9 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePostRequest $request)
+    public function store(StorePostRequest $request, CreatePost $createPost)
     {
-        $data = $request->validated();
-        Post::create($data);
-        return back();
+       return $createPost->handle($request);
     }
 
     /**

@@ -16,6 +16,9 @@ defineProps({
 <template>
     <div class="">
         <div class="px-8 ">
+            <div v-if="media.length > 0" class="max-w-[500px] mt-3 mx-auto flex flex-col gap-2">
+                <CarouselIamgeCustom :media="media"/>
+            </div>
             <Disclosure  v-slot="{open}">
                 <div v-if="!open" v-html="body && body.length > lenghtDisplay ?  body.substring(0,100)+ '...' : body"/>
                 <div v-if="body && body.length > lenghtDisplay">
@@ -30,9 +33,7 @@ defineProps({
                 </div>
             </Disclosure>
         </div>
-        <div v-if="media" class="max-w-[500px] mt-3 mx-auto flex flex-col gap-2">
-            <CarouselIamgeCustom :media="media"/>
-        </div>
+
     </div>
 </template>
 
