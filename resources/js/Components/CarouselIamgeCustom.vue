@@ -29,20 +29,28 @@ watch(() => props.media, (newValue, oldValue) => {
     console.log('Media changed:', newValue);
 });
 
-const emit = defineEmits(["handle-delete-image"]);
-
-const emitDeleteEvent = (index) => {
-    emit("handle-delete-image", index);
-};
-
 </script>
 
 <template>
-    <v-carousel :show-arrows="isSingleSlide && 'hover'"
+    <v-carousel :show-arrows="isSingleSlide"
                 progress
                 hide-delimiters
                 progress-color="#F3382E"
     >
+        <template v-slot:prev="{props}">
+            <v-btn class="opacity-50" size="30px" v-bind="props">
+                <v-icon>
+                    mdi-chevron-left
+                </v-icon>
+            </v-btn>
+        </template>
+        <template v-slot:next="{props}">
+            <v-btn class="opacity-50" size="30px" v-bind="props">
+                <v-icon>
+                    mdi-chevron-right
+                </v-icon>
+            </v-btn>
+        </template>
         <v-carousel-item
             v-for="(src) in media"
             :src="src.url"
@@ -53,5 +61,7 @@ const emitDeleteEvent = (index) => {
 </template>
 
 <style scoped>
-
+.v-btn--icon  .v-btn--density-default {
+    opacity: 0.2 !important;
+}
 </style>

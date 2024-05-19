@@ -43,7 +43,7 @@ const emitDeleteEvent = (index) => {
             v-for="(image, index) in media"
             :key="index"
             class="d-flex child-flex"
-            cols="6"
+            :cols="media.length >  1 ? 6 : 12"
         >
             <v-img
                 :lazy-src="image.url"

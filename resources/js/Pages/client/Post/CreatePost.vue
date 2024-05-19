@@ -1,16 +1,14 @@
 <script setup>
 
 import {ref} from "vue";
-import CreatePostModal from "@/Pages/client/Post/PostModal.vue";
+import PostModal from "@/Pages/client/Post/PostModal.vue";
 import {usePage} from "@inertiajs/vue3";
+const authUser = usePage().props.auth.user
 
 const isShowCreatePost = ref(false)
 const handleShowCreatePost = () => {
     isShowCreatePost.value = !isShowCreatePost.value;
 }
-
-const authUser = usePage().props.auth.user
-
 
 </script>
 <template>
@@ -23,7 +21,7 @@ const authUser = usePage().props.auth.user
                 </span>
         </div>
     </div>
-    <CreatePostModal v-model="isShowCreatePost"/>
+    <PostModal v-model="isShowCreatePost"/>
 </template>
 
 <style scoped>

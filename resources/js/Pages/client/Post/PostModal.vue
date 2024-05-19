@@ -21,6 +21,7 @@ import LocationMapIcon from "@/Icon/LocationMapIcon.vue";
 import {isImage} from "@/Utils/utils.js";
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import DetailsImagesPost from "@/Components/DetailsImagesPost.vue";
+import {toast} from "vue3-toastify";
 
 const  props = defineProps({
     modelValue: Boolean,
@@ -34,10 +35,11 @@ const  props = defineProps({
 })
 const authUser = usePage().props.auth.user
 const attachmentFiles = ref([])
-const newPostForm = useForm({
+const postForm = useForm({
     id: null,
     body: '',
-    attachments : []
+    attachments : [],
+    deleted_file_ids : []
 })
 
 
@@ -53,26 +55,32 @@ const editorConfig =  {
 
 const handleOnSubmit = () => {
     if (props.isEdit) {
-        newPostForm.put(route('post.update', props.postEdit), {
+        postForm.attachments = attachmentFiles.value
+            .filter((myFile) => myFile.file !== undefined)
+            .map((myFile) => myFile.file);
+        console.log(postForm)
+        postForm.put(route('post.update', props.postEdit), {
             onSuccess: () => {
                 show.value = false
+                toast.success("Update Post successfully.")
             },
             onError : (errors) => {
-                console.log(errors)
+                toast.error("Somethings went wrong !")
             }
         })
     }else {
-        newPostForm.attachments = attachmentFiles.value.map((myFile) => {
+        postForm.attachments = attachmentFiles.value.map((myFile) => {
             return myFile.file
         })
-        newPostForm.post(route('post.create'), {
+        postForm.post(route('post.create'), {
             onSuccess: () => {
-                newPostForm.reset()
+                postForm.reset()
                 show.value = false
                 resetValues()
+                toast.success("Create Post successfully.")
             },
             onError: (e) => {
-                console.log(e.body)
+                toast.error("Somethings went wrong !")
             }
         })
     }
@@ -89,7 +97,6 @@ const show = computed({
 })
 function closeModal() {
     show.value = false
-    resetValues()
 }
 
 const resetValues = () => {
@@ -121,13 +128,19 @@ const readFile = (file) => {
 }
 
 const handleDeleteImage = (index) => {
-    attachmentFiles.value = attachmentFiles.value.filter((_, i) => i !== index);
+    attachmentFiles.value = attachmentFiles.value.filter((_, i) => {
+        if (_.id && i === index) {
+            postForm.deleted_file_ids.push(_.id);
+        }
+        return i !== index;
+    });
 };
 
 watch(() => props.postEdit, (newPostEdit) => {
     if (newPostEdit) {
-        newPostForm.body = newPostEdit.body || ''
-        newPostForm.id = props.postEdit.id
+        postForm.body = newPostEdit.body || ''
+        postForm.id = props.postEdit.id
+        attachmentFiles.value = newPostEdit.attachments || []
     } else {
         resetValues()
     }
@@ -180,10 +193,12 @@ watch(() => props.postEdit, (newPostEdit) => {
 
                                     justify-between"
                                 >
-                                    <span>
+                                    <span v-if="!isEdit">
                                         Create Post
                                     </span>
-
+                                    <span v-else>
+                                        Edit Post
+                                    </span>
                                     <span
                                         @click="closeModal"
                                         class="cursor-pointer hover:opacity-50" >
@@ -197,16 +212,17 @@ watch(() => props.postEdit, (newPostEdit) => {
                                             <div class="py-5 flex flex-col gap-5">
                                                 <ckeditor
                                                           :editor="editor"
-                                                          v-model="newPostForm.body"
+                                                          v-model="postForm.body"
                                                           :config="editorConfig">
                                                 </ckeditor>
                                                 <div class="px-1">
                                                     <DetailsImagesPost
                                                         @handle-delete-image="handleDeleteImage"
                                                         v-if="attachmentFiles.length > 0"
-                                                        :media="attachmentFiles"/>
+                                                        :media="attachmentFiles"
+                                                    />
                                                 </div>
-                                                <div v-if="!isEdit" class="border py-2 px-3 rounded-md flex items-center justify-between">
+                                                <div  class="border py-2 px-3 rounded-md flex items-center justify-between">
                                                     <h6 class="font-bold">Add to your post</h6>
                                                     <div class="flex items-center justify-center gap-3">
                                                         <label for="post-images" class="">

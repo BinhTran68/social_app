@@ -2,10 +2,7 @@
 
 import {Disclosure, DisclosureButton, DisclosurePanel} from "@headlessui/vue";
 import CarouselIamgeCustom from "@/Components/CarouselIamgeCustom.vue";
-
 const lenghtDisplay = 120;
-
-
 defineProps({
     body: '',
     media: Object
@@ -15,7 +12,7 @@ defineProps({
 
 <template>
     <div class="">
-        <div class="px-8 ">
+        <div class=" md:px-8">
             <div v-if="media.length > 0" class="max-w-[500px] mt-3 mx-auto flex flex-col pb-3 gap-2">
                 <CarouselIamgeCustom :media="media"/>
             </div>

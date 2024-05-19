@@ -16,7 +16,11 @@ class UpdatePostRequest extends FormRequest
     public function authorize(): bool
     {
         //  Todo maybe change latter
-        $post = Post::where('id', $this->input('id'))->where('user_id', Auth::id())->first();
+        $post = Post::query()
+            ->where('id', $this->input('id'))
+            ->where('user_id', Auth::id())
+            ->first();
+
         return !!$post;
     }
 
@@ -35,7 +39,8 @@ class UpdatePostRequest extends FormRequest
                     'wav', 'mp4', 'doc', 'docx', 'pdf', 'csv', 'xls', 'xlsx', 'zip'
                 ])->max(500 * 1024 * 1024)
             ],
-            'user_id' => ['numeric']
+            'user_id' => ['numeric'],
+            'deleted_file_ids' => []
         ];
     }
 
