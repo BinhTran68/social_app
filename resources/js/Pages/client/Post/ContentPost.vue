@@ -16,14 +16,15 @@ defineProps({
 <template>
     <div class="">
         <div class="px-8 ">
-            <div v-if="media.length > 0" class="max-w-[500px] mt-3 mx-auto flex flex-col gap-2">
+            <div v-if="media.length > 0" class="max-w-[500px] mt-3 mx-auto flex flex-col pb-3 gap-2">
                 <CarouselIamgeCustom :media="media"/>
             </div>
+
             <Disclosure  v-slot="{open}">
                 <div v-if="!open" v-html="body && body.length > lenghtDisplay ?  body.substring(0,100)+ '...' : body"/>
                 <div v-if="body && body.length > lenghtDisplay">
-                    <DisclosurePanel class="flex justify-end" v-if="open" static>
-                        <div v-html="body"></div>
+                    <DisclosurePanel class="flex  justify-end" v-if="open" static>
+                        <div class="py-2" v-html="body"></div>
                     </DisclosurePanel>
                     <DisclosureButton class=" text-xs hover:underline ">
                         <span class="text-blue-600">

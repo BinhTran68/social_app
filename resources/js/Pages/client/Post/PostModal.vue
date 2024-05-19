@@ -1,5 +1,5 @@
 <script setup>
-import {computed, ref, watch, watchEffect} from 'vue'
+import {computed, onMounted, ref, watch, watchEffect} from 'vue'
 import {
     TransitionRoot,
     TransitionChild,
@@ -22,9 +22,27 @@ import {isImage} from "@/Utils/utils.js";
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import DetailsImagesPost from "@/Components/DetailsImagesPost.vue";
 
+const  props = defineProps({
+    modelValue: Boolean,
+    postEdit : {
+        type: Object
+    },
+    isEdit: {
+        type: Boolean,
+        default: false
+    }
+})
+const authUser = usePage().props.auth.user
+const attachmentFiles = ref([])
+const newPostForm = useForm({
+    id: null,
+    body: '',
+    attachments : []
+})
 
+
+// ckEditor config
 const  editor = ClassicEditor
-
 const editorConfig =  {
     toolbar: [  'undo', 'redo',
         'heading',
@@ -33,35 +51,33 @@ const editorConfig =  {
         'bulletedList', 'numberedList', 'outdent', 'indent']
 }
 
-const authUser = usePage().props.auth.user
-
-const attachmentFiles = ref([])
-
-const newPostForm = useForm({
-    body: '',
-    attachments : []
-})
-
-const handleOnCreatePost = () => {
-    newPostForm.attachments = attachmentFiles.value.map((myFile) => {
-        return myFile.file
-    })
-    newPostForm.post(route('post.create'), {
-        onSuccess: () => {
-            newPostForm.reset()
-            show.value = false
-            resetValues()
-        },
-        onError: (e) => {
-            console.log(e.body)
-        }
-    })
+const handleOnSubmit = () => {
+    if (props.isEdit) {
+        newPostForm.put(route('post.update', props.postEdit), {
+            onSuccess: () => {
+                show.value = false
+            },
+            onError : (errors) => {
+                console.log(errors)
+            }
+        })
+    }else {
+        newPostForm.attachments = attachmentFiles.value.map((myFile) => {
+            return myFile.file
+        })
+        newPostForm.post(route('post.create'), {
+            onSuccess: () => {
+                newPostForm.reset()
+                show.value = false
+                resetValues()
+            },
+            onError: (e) => {
+                console.log(e.body)
+            }
+        })
+    }
 }
 
-const  props = defineProps({
-    modelValue: Boolean
-
-})
 
 const emit = defineEmits(['update:modelValue'])
 
@@ -77,7 +93,6 @@ function closeModal() {
 }
 
 const resetValues = () => {
-    newPostForm.body = ''
     attachmentFiles.value = []
 }
 
@@ -109,10 +124,15 @@ const handleDeleteImage = (index) => {
     attachmentFiles.value = attachmentFiles.value.filter((_, i) => i !== index);
 };
 
+watch(() => props.postEdit, (newPostEdit) => {
+    if (newPostEdit) {
+        newPostForm.body = newPostEdit.body || ''
+        newPostForm.id = props.postEdit.id
+    } else {
+        resetValues()
+    }
+}, { immediate: true })
 
-watchEffect(() => {
-    console.log(attachmentFiles)
-})
 
 </script>
 <template>
@@ -175,14 +195,18 @@ watchEffect(() => {
                                         <div class="px-6 py-3 bg-white rounded-md relative">
                                             <hr>
                                             <div class="py-5 flex flex-col gap-5">
-                                                <ckeditor :class="['rounded-md']" :editor="editor" v-model="newPostForm.body" :config="editorConfig"></ckeditor>
+                                                <ckeditor
+                                                          :editor="editor"
+                                                          v-model="newPostForm.body"
+                                                          :config="editorConfig">
+                                                </ckeditor>
                                                 <div class="px-1">
                                                     <DetailsImagesPost
                                                         @handle-delete-image="handleDeleteImage"
                                                         v-if="attachmentFiles.length > 0"
                                                         :media="attachmentFiles"/>
                                                 </div>
-                                                <div class="border py-2 px-3 rounded-md flex items-center justify-between">
+                                                <div v-if="!isEdit" class="border py-2 px-3 rounded-md flex items-center justify-between">
                                                     <h6 class="font-bold">Add to your post</h6>
                                                     <div class="flex items-center justify-center gap-3">
                                                         <label for="post-images" class="">
@@ -208,7 +232,7 @@ watchEffect(() => {
 
                                             </div>
                                             <Button
-                                                @click="handleOnCreatePost"
+                                                @click="handleOnSubmit"
                                                 :class="['w-full']">
                                                 Post
                                             </Button>

@@ -5,7 +5,7 @@ namespace App\Domain\Post\Requests;
 use App\Models\Post;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Validation\Rules\File;
 
 
 class UpdatePostRequest extends FormRequest
@@ -29,6 +29,12 @@ class UpdatePostRequest extends FormRequest
     {
         return [
             'body' => ['nullable'],
+            'attachments' => 'array|max:10' ,
+            'attachments.*' => [
+                File::types(['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp3',
+                    'wav', 'mp4', 'doc', 'docx', 'pdf', 'csv', 'xls', 'xlsx', 'zip'
+                ])->max(500 * 1024 * 1024)
+            ],
             'user_id' => ['numeric']
         ];
     }

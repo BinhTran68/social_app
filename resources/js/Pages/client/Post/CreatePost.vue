@@ -1,7 +1,7 @@
 <script setup>
 
 import {ref} from "vue";
-import CreatePostModal from "@/Pages/client/Post/CreatePostModal.vue";
+import CreatePostModal from "@/Pages/client/Post/PostModal.vue";
 import {usePage} from "@inertiajs/vue3";
 
 const isShowCreatePost = ref(false)

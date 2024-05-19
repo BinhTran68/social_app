@@ -1,17 +1,14 @@
 <script setup>
-import CircleImage from "@/Components/CircleImage.vue";
 import ContentPost from "@/Pages/client/Post/ContentPost.vue";
 import HeartIcon from "@/Icon/HeartIcon.vue";
 import CommentIcon from "@/Icon/CommentIcon.vue";
 import ShareIcon from "@/Icon/ShareIcon.vue";
-import {formatDate} from "@/Utils/utils.js";
-
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
 import EllipsisVerticalIcon from "@/Icon/Ellipsis-VerticalIcon.vue";
 import {computed, onMounted, ref} from "vue";
 import PostUserHeader from "@/Pages/client/Post/PostUserHeader.vue";
-import PostModal from "@/Pages/client/Post/PostEditModal.vue";
 import {router, usePage} from "@inertiajs/vue3";
+import PostModal from "@/Pages/client/Post/PostModal.vue";
 
 const  props = defineProps({
     post: Object
@@ -38,7 +35,7 @@ const deletePost = () => {
         <div class="flex items-center justify-between px-5 gap-3">
             <PostUserHeader :post="post"/>
             <div>
-                <Menu as="div" class="relative inline-block text-left">
+                <Menu as="div" class="relative inline-block text-left z-50">
                     <div class="">
                         <MenuButton class="hover:bg-gray-300 py-1 px-1 transition rounded-full flex items-center justify-center">
                             <EllipsisVerticalIcon className="w-5 h-5 text-gray-700"/>
@@ -95,7 +92,11 @@ const deletePost = () => {
             </div>
         </div>
     </div>
-    <PostModal :post="post" v-model="showEditModal"/>
+    <PostModal
+        :postEdit="post"
+        :isEdit="true"
+        v-model="showEditModal"
+    />
 </template>
 
 <style scoped>
