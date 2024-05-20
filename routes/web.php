@@ -13,7 +13,6 @@ Route::get('/', [HomeController::class, 'index'])
 Route::get('/u/{user:username}', [ProfileController::class, 'index'])
     ->name('profile');
 
-
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -26,7 +25,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::post('/posts', [PostController::class, 'store'])->name('post.create');
-    Route::put('/posts/{post}', [PostController::class, 'update'])->name('post.update');
+    // Cannot use put, patch
+    Route::post('/posts/{post}', [PostController::class, 'update'])->name('post.update');
     Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('post.destroy');
 
 });

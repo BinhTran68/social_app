@@ -1,22 +1,12 @@
 <script setup>
-import {computed, onMounted, ref, watch, watchEffect} from 'vue'
-import {
-    TransitionRoot,
-    TransitionChild,
-    Dialog,
-    DialogPanel,
-    DialogTitle,
-} from '@headlessui/vue'
-import InputTextarea from "@/Components/InputTextarea.vue";
-import PostUserHeader from "@/Pages/client/Post/PostUserHeader.vue";
+import {computed, ref, watch} from 'vue'
+import {Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot,} from '@headlessui/vue'
 import XmarkIcon from "@/Icon/XmarkIcon.vue";
-import {router, useForm, usePage} from "@inertiajs/vue3";
+import {useForm, usePage} from "@inertiajs/vue3";
 import VideoIcon from "@/Icon/VideoIcon.vue";
-import CarouselIamgeCustom from "@/Components/CarouselIamgeCustom.vue";
 import ImageIcon from "@/Icon/ImageIcon.vue";
 import Button from "@/Components/Button.vue";
 import SmileIcon from "@/Icon/SmileIcon.vue";
-import CancelIcon from "@/Icon/CancelIcon.vue";
 import LocationMapIcon from "@/Icon/LocationMapIcon.vue";
 import {isImage} from "@/Utils/utils.js";
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
@@ -53,13 +43,14 @@ const editorConfig =  {
         'bulletedList', 'numberedList', 'outdent', 'indent']
 }
 
-const handleOnSubmit = () => {
+const handleOnSubmit =  () => {
+    const validAttachments = attachmentFiles.value.filter(myFile => myFile.file);
+
     if (props.isEdit) {
-        postForm.attachments = attachmentFiles.value
-            .filter((myFile) => myFile.file !== undefined)
-            .map((myFile) => myFile.file);
-        console.log(postForm)
-        postForm.put(route('post.update', props.postEdit), {
+        postForm.attachments = validAttachments.map((myFile) => {
+            return myFile.file
+        })
+        postForm.post(route('post.update', props.postEdit), {
             onSuccess: () => {
                 show.value = false
                 toast.success("Update Post successfully.")
@@ -95,6 +86,8 @@ const show = computed({
     get: () => props.modelValue,
     set: (value) => emit('update:modelValue', value)
 })
+
+
 function closeModal() {
     show.value = false
 }

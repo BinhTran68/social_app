@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\File;
 
 
-class UpdatePostRequest extends FormRequest
+class UpdatePostRequest extends StorePostRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -20,7 +20,6 @@ class UpdatePostRequest extends FormRequest
             ->where('id', $this->input('id'))
             ->where('user_id', Auth::id())
             ->first();
-
         return !!$post;
     }
 
@@ -31,19 +30,11 @@ class UpdatePostRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'body' => ['nullable'],
-            'attachments' => 'array|max:10' ,
-            'attachments.*' => [
-                File::types(['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp3',
-                    'wav', 'mp4', 'doc', 'docx', 'pdf', 'csv', 'xls', 'xlsx', 'zip'
-                ])->max(500 * 1024 * 1024)
-            ],
-            'user_id' => ['numeric'],
-            'deleted_file_ids' => []
-        ];
+       return array_merge(parent::rules(), [
+           'deleted_file_ids' => ['array'],
+           'deleted_file_ids.*' => ['numeric']
+       ]);
     }
-
     protected function prepareForValidation()
     {
         $this->merge(['user_id' => auth()->user()->id]);

@@ -4,6 +4,7 @@ namespace App\Domain\Post\Controllers;
 
 use App\Domain\Post\Actions\CreatePost;
 use App\Domain\Post\Actions\DeletePostAction;
+use App\Domain\Post\Actions\UpdatePostAction;
 use App\Domain\Post\Requests\StorePostRequest;
 use App\Domain\Post\Requests\UpdatePostRequest;
 use App\Http\Controllers\Controller;
@@ -55,10 +56,9 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePostRequest $request, Post $post)
+    public function update(UpdatePostRequest $request, Post $post, UpdatePostAction $action)
     {
-        $post->update($request->validated());
-        return back();
+        return $action->handle($request, $post);
     }
 
     /**
