@@ -1,7 +1,8 @@
 <script setup>
 
 import {Disclosure, DisclosureButton, DisclosurePanel} from "@headlessui/vue";
-import CarouselIamgeCustom from "@/Components/CarouselIamgeCustom.vue";
+import AttachmentCrouselPost from "@/Pages/client/Post/AttachmentCrouselPost.vue";
+
 const lenghtDisplay = 120;
 defineProps({
     body: '',
@@ -14,7 +15,7 @@ defineProps({
     <div class="">
         <div class=" md:px-8">
             <div v-if="media.length > 0" class="max-w-[500px] mt-3 mx-auto flex flex-col pb-3 gap-2">
-                <CarouselIamgeCustom :media="media"/>
+                <AttachmentCrouselPost :media="media"/>
             </div>
 
             <Disclosure  v-slot="{open}">

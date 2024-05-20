@@ -2,9 +2,11 @@
 
 
 import {ref, watchEffect, defineProps, watch} from "vue";
-import XmarkIcon from "@/Icon/XmarkIcon.vue";
+import AttachmentPreviewModal from "@/Pages/client/Post/AttachmentPreviewModal.vue";
+import PostModal from "@/Pages/client/Post/PostModal.vue";
 
-
+const showPreviewModal =  ref(false)
+const attachmentPreview = ref(null)
 const isSingleSlide = ref(true);
 const props = defineProps({
     media: {
@@ -20,6 +22,11 @@ const props = defineProps({
     }
 })
 
+const openDetailAttachments = (file) => {
+    attachmentPreview.value = file
+    showPreviewModal.value = true
+
+}
 
 watchEffect(() => {
     isSingleSlide.value = props.media.length > 1;
@@ -52,13 +59,21 @@ watch(() => props.media, (newValue, oldValue) => {
             </v-btn>
         </template>
         <v-carousel-item
-            v-for="(src) in media"
-            :src="src.url"
+            class="cursor-pointer"
+            v-for="(file) in media"
+            :src="file.url"
             cover
+            @click="openDetailAttachments(file)"
         >
         </v-carousel-item>
     </v-carousel>
+
+    <AttachmentPreviewModal
+        :attachment="attachmentPreview"
+        v-model="showPreviewModal" />
 </template>
+
+
 
 <style scoped>
 .v-btn--icon  .v-btn--density-default {
