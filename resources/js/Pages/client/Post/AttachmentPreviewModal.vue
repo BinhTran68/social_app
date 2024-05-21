@@ -68,14 +68,13 @@ function closeModal() {
                                 flex
                                 justify-center
                                 items-center
-                                gap-4 max-h-[98vh] object-cover relative">
-                                                <v-img
-                                                    class="bg-grey-lighten-2 "
-                                                    :src="attachment.url"
-                                                    cover
-                                                    height="100%"
-                                                >
-                                                </v-img>
+                                gap-4
+                                max-h-[95vh] object-cover relative">
+                                    <img
+                                        class="w-full h-full"
+                                        :src="attachment.url"
+                                        :alt="attachment.name"
+                                    >
                                     <span
                                         @click="closeModal"
                                         class="
