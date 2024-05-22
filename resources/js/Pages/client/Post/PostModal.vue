@@ -12,26 +12,7 @@ import {isImage} from "@/Utils/utils.js";
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import DetailsImagesPost from "@/Components/DetailsImagesPost.vue";
 import {toast} from "vue3-toastify";
-
-const  props = defineProps({
-    modelValue: Boolean,
-    postEdit : {
-        type: Object
-    },
-    isEdit: {
-        type: Boolean,
-        default: false
-    }
-})
-const authUser = usePage().props.auth.user
-const attachmentFiles = ref([])
-const postForm = useForm({
-    id: null,
-    body: '',
-    attachments : [],
-    deleted_file_ids : []
-})
-
+import InputError from "@/Components/InputError.vue";
 
 // ckEditor config
 const  editor = ClassicEditor
@@ -42,6 +23,30 @@ const editorConfig =  {
         'link', 'blockQuote',
         'bulletedList', 'numberedList', 'outdent', 'indent']
 }
+
+
+const props = defineProps({
+    modelValue: Boolean,
+    postEdit : {
+        type: Object
+    },
+    isEdit: {
+        type: Boolean,
+        default: false
+    }
+})
+
+const authUser = usePage().props.auth.user
+const postForm = useForm({
+    id: null,
+    body: '',
+    attachments : [],
+    deleted_file_ids : []
+})
+
+// State
+const attachmentFiles = ref([])
+const errorsRef = ref(null);
 
 const handleOnSubmit =  () => {
     const validAttachments = attachmentFiles.value.filter(myFile => myFile.file);
@@ -70,14 +75,12 @@ const handleOnSubmit =  () => {
                 resetValues()
                 toast.success("Create Post successfully.")
             },
-            onError: (e) => {
-                toast.error("Somethings went wrong !")
+            onError: (errors) => {
+                errorsRef.value = errors
             }
         })
     }
 }
-
-
 const emit = defineEmits(['update:modelValue'])
 
 // computed by Vue3
@@ -90,13 +93,17 @@ const show = computed({
 
 function closeModal() {
     show.value = false
+    resetValues();
 }
 
 const resetValues = () => {
+    errorsRef.value = null
     attachmentFiles.value = []
+
 }
 
 const onSelectImages = async (e) => {
+    clearError('attachments')
     const files = e.target.files
     for (const file of files) {
         if (isImage(file)) {
@@ -121,6 +128,7 @@ const readFile = (file) => {
 }
 
 const handleDeleteImage = (index) => {
+    clearError('attachments')
     attachmentFiles.value = attachmentFiles.value.filter((_, i) => {
         if (_.id && i === index) {
             postForm.deleted_file_ids.push(_.id);
@@ -138,6 +146,12 @@ watch(() => props.postEdit, (newPostEdit) => {
         resetValues()
     }
 }, { immediate: true })
+
+const clearError = (field) => {
+    if (errorsRef.value) {
+        errorsRef.value[field] = null;
+    }
+};
 
 
 </script>
@@ -203,16 +217,26 @@ watch(() => props.postEdit, (newPostEdit) => {
                                         <div class="px-6 py-3 bg-white rounded-md relative">
                                             <hr>
                                             <div class="py-5 flex flex-col gap-5">
-                                                <ckeditor
-                                                          :editor="editor"
-                                                          v-model="postForm.body"
-                                                          :config="editorConfig">
-                                                </ckeditor>
-                                                <div class="px-1">
+                                                <div class="flex flex-col gap-2">
+                                                    <ckeditor
+                                                        @input="clearError('body')"
+                                                        :editor="editor"
+                                                        v-model="postForm.body"
+                                                        :config="editorConfig">
+                                                    </ckeditor>
+                                                    <InputError v-if="errorsRef && errorsRef.body"
+                                                                :message="errorsRef.body || '' "
+                                                    />
+                                                </div>
+
+                                                <div class="px-1 flex flex-col gap-2">
                                                     <DetailsImagesPost
                                                         @handle-delete-image="handleDeleteImage"
                                                         v-if="attachmentFiles.length > 0"
                                                         :media="attachmentFiles"
+                                                    />
+                                                    <InputError v-if="errorsRef && errorsRef.attachments"
+                                                                :message="errorsRef.attachments || '' "
                                                     />
                                                 </div>
                                                 <div  class="border py-2 px-3 rounded-md flex items-center justify-between">
@@ -225,7 +249,9 @@ watch(() => props.postEdit, (newPostEdit) => {
                                                             @click.stop type="file"
                                                             multiple id="post-images"
                                                             hidden
+                                                            accept="image/*"
                                                             @change="onSelectImages"
+
                                                         >
                                                         <span>
                                   <VideoIcon class="w-8 h-8 text-purple-500 hover:bg-gray-200 rounded cursor-pointer"/>

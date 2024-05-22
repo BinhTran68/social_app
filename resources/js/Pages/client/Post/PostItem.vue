@@ -3,20 +3,23 @@ import ContentPost from "@/Pages/client/Post/ContentPost.vue";
 import HeartIcon from "@/Icon/HeartIcon.vue";
 import CommentIcon from "@/Icon/CommentIcon.vue";
 import ShareIcon from "@/Icon/ShareIcon.vue";
-import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
+import {Menu, MenuButton, MenuItems, MenuItem} from '@headlessui/vue'
 import EllipsisVerticalIcon from "@/Icon/Ellipsis-VerticalIcon.vue";
-import {computed, onMounted, ref} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import PostUserHeader from "@/Pages/client/Post/PostUserHeader.vue";
 import {router, usePage} from "@inertiajs/vue3";
 import PostModal from "@/Pages/client/Post/PostModal.vue";
 
-const  props = defineProps({
+
+const props = defineProps({
     post: Object
 })
 const post_owner = props.post.user
 const authUser = usePage().props.auth.user
-const showEditModal =  ref(false)
+const showEditModal = ref(false)
 
+// State
+const postEdit = ref(null);
 
 const isMyPost = computed(() => (authUser && authUser.id === post_owner.id))
 
@@ -28,6 +31,14 @@ const deletePost = () => {
     }
 }
 
+watch(showEditModal, () => {
+    if (showEditModal.value) {
+        postEdit.value = props.post
+    }else {
+        postEdit.value = null
+    }
+})
+
 </script>
 
 <template>
@@ -37,7 +48,8 @@ const deletePost = () => {
             <div>
                 <Menu as="div" class="relative inline-block text-left z-50">
                     <div class="">
-                        <MenuButton class="hover:bg-gray-300 py-1 px-1 transition rounded-full flex items-center justify-center">
+                        <MenuButton
+                            class="hover:bg-gray-300 py-1 px-1 transition rounded-full flex items-center justify-center">
                             <EllipsisVerticalIcon className="w-5 h-5 text-gray-700"/>
                         </MenuButton>
                     </div>
@@ -54,7 +66,7 @@ const deletePost = () => {
                             class="absolute right-0 mt-2 w-32 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none"
                         >
                             <div class="px-1 py-1">
-                                <MenuItem  v-slot="{ active }">
+                                <MenuItem v-slot="{ active }">
                                     <button
                                         @click="showEditModal = true"
                                         :class="[
@@ -65,7 +77,7 @@ const deletePost = () => {
                                         Edit
                                     </button>
                                 </MenuItem>
-                                <MenuItem   v-slot="{ active }">
+                                <MenuItem v-slot="{ active }">
                                     <button
                                         :class="[
                                  active ? 'bg-indigo-500 text-white' : 'text-red-700',
@@ -86,17 +98,19 @@ const deletePost = () => {
         <div class="flex flex-col gap-3">
             <ContentPost :body="post.body" :media="post.attachments"/>
             <div class="flex items-center mx-5 justify-start gap-5 ">
-                <HeartIcon  className="w-8 " />
-                <CommentIcon />
-                <ShareIcon />
+                <HeartIcon className="w-8 "/>
+                <CommentIcon/>
+                <ShareIcon/>
             </div>
         </div>
     </div>
     <PostModal
-        :postEdit="post"
+        v-if="postEdit"
+        :postEdit="postEdit"
         :isEdit="true"
         v-model="showEditModal"
     />
+
 </template>
 
 <style scoped>

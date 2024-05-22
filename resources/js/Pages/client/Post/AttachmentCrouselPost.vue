@@ -69,6 +69,7 @@ watch(() => props.media, (newValue, oldValue) => {
     </v-carousel>
 
     <AttachmentPreviewModal
+        v-if="attachmentPreview"
         :attachment="attachmentPreview"
         v-model="showPreviewModal" />
 </template>
