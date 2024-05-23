@@ -2,6 +2,7 @@
 
 use App\Domain\Home\Controllers\HomeController;
 use App\Domain\Post\Controllers\PostController;
+use App\Domain\Post\Controllers\PostReactionController;
 use App\Domain\User\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -28,6 +29,10 @@ Route::middleware('auth')->group(function () {
     // Cannot use put, patch
     Route::post('/posts/{post}', [PostController::class, 'update'])->name('post.update');
     Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('post.destroy');
+
+    // Reaction Post
+    Route::post('/posts/{post}/reaction', [PostReactionController::class, 'store'])
+        ->name('post.reaction');
 
 });
 

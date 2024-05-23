@@ -3,7 +3,7 @@ import ContentPost from "@/Pages/client/Post/ContentPost.vue";
 import HeartIcon from "@/Icon/HeartIcon.vue";
 import CommentIcon from "@/Icon/CommentIcon.vue";
 import ShareIcon from "@/Icon/ShareIcon.vue";
-import {Menu, MenuButton, MenuItems, MenuItem} from '@headlessui/vue'
+import {Menu, MenuButton, MenuItems, MenuItem, Disclosure, DisclosurePanel, DisclosureButton} from '@headlessui/vue'
 import EllipsisVerticalIcon from "@/Icon/Ellipsis-VerticalIcon.vue";
 import {computed, onMounted, ref, watch} from "vue";
 import PostUserHeader from "@/Pages/client/Post/PostUserHeader.vue";
@@ -17,9 +17,11 @@ const props = defineProps({
 const post_owner = props.post.user
 const authUser = usePage().props.auth.user
 const showEditModal = ref(false)
+const lenghtDisplay = 120;
 
 // State
 const postEdit = ref(null);
+const isLike = ref(false);
 
 const isMyPost = computed(() => (authUser && authUser.id === post_owner.id))
 
@@ -29,6 +31,12 @@ const deletePost = () => {
             preserveScroll: true
         })
     }
+}
+
+const handleClickReact = () => {
+    axios.post(route('post.reaction', props.post), {
+        reaction: 'like'
+    })
 }
 
 watch(showEditModal, () => {
@@ -97,11 +105,17 @@ watch(showEditModal, () => {
         </div>
         <div class="flex flex-col gap-3">
             <ContentPost :body="post.body" :media="post.attachments"/>
-            <div class="flex items-center mx-5 justify-start gap-5 ">
-                <HeartIcon className="w-8 "/>
+            <div class="flex items-center mx-5 px-2 justify-start gap-5 ">
+                <span @click="handleClickReact"
+                      class="cursor-pointer flex items-center gap-2">
+                      <HeartIcon :fill="'none'" className="w-8"/>
+                     {{post.num_of_reactions}} likes
+                </span>
                 <CommentIcon/>
-                <ShareIcon/>
             </div>
+            <pre>
+                {{post}}
+            </pre>
         </div>
     </div>
     <PostModal

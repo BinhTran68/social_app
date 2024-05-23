@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use phpDocumentor\Reflection\Types\Boolean;
 
 class Post extends Model
 {
@@ -30,6 +31,24 @@ class Post extends Model
         return $this->hasMany(PostAttachment::class);
     }
 
+
+    // One Post have Many PostReaction
+    // reactions_count  = ->withCount('reactions')
+    // relation + count
+    public function reactions():HasMany
+    {
+        return $this->hasMany(PostReaction::class);
+    }
+
+    public function hasReactionFromUser($userId): Boolean
+    {
+        return $this->reactions()->where('user_id', $userId)->exists();
+    }
+
+    public function countReactions(): int
+    {
+        return $this->reactions()->count();
+    }
 
 
 }

@@ -20,7 +20,7 @@ const authUser = usePage().props.auth.user
 
 <template>
     <div class="">
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900 z-50">
+        <div class="min-h-screen bg-indigo-50 dark:bg-gray-900 z-50">
             <nav class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 fixed w-full top-0 right-0 left-0 z-50">
                 <!-- Primary Navigation Menu -->
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -28,7 +28,7 @@ const authUser = usePage().props.auth.user
                         <div class="flex">
                             <!-- Logo -->
                             <div class="shrink-0 flex items-center">
-                                <Link :href="route('dashboard')">
+                                <Link :href="route('home')">
                                     <ApplicationLogo
                                         class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200"
                                     />
@@ -168,8 +168,11 @@ const authUser = usePage().props.auth.user
             </header>
 
             <div class="grid lg:grid-cols-12 gap-3 relative py-5 mt-[64px] " >
-                <div class="lg:col-span-4 sticky ">
-                    <FollowingList/>
+                <div class="lg:col-span-4">
+                    <div class="fixed lg:block sm:hidden">
+                        <FollowingList/>
+                    </div>
+
                 </div>
                 <div class="lg:col-span-4 md:order-3 px-5  flex-1 ">
                     <FollowingList/>

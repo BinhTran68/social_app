@@ -40,9 +40,9 @@ watch(() => props.media, (newValue, oldValue) => {
 
 <template>
     <v-carousel :show-arrows="isSingleSlide"
-                progress
+                progress="#2F84FF"
                 hide-delimiters
-                progress-color="#F3382E"
+
     >
         <template v-slot:prev="{props}">
             <v-btn class="opacity-50" size="30px" v-bind="props">
