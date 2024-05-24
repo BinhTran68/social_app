@@ -34,8 +34,19 @@ const deletePost = () => {
 }
 
 const handleClickReact = () => {
+    if (props.post.current_user_has_reaction) {
+        props.post.current_user_has_reaction = false
+        props.post.num_of_reactions =  props.post.num_of_reactions-1
+    }else  {
+        props.post.current_user_has_reaction = true
+        props.post.num_of_reactions =  props.post.num_of_reactions + 1
+    }
     axios.post(route('post.reaction', props.post), {
         reaction: 'like'
+    }).then((res) => {
+        props.post.num_of_reactions = res.data.num_of_reactions
+    }).catch(e => {
+
     })
 }
 
@@ -108,14 +119,14 @@ watch(showEditModal, () => {
             <div class="flex items-center mx-5 px-2 justify-start gap-5 ">
                 <span @click="handleClickReact"
                       class="cursor-pointer flex items-center gap-2">
-                      <HeartIcon :fill="'none'" className="w-8"/>
+                      <HeartIcon :fill="post.current_user_has_reaction ? 'red' : 'none'" className="w-8"/>
                      {{post.num_of_reactions}} likes
                 </span>
-                <CommentIcon/>
+                <span class="flex  items-center gap-3">
+                     <CommentIcon/> comments
+                </span>
+
             </div>
-            <pre>
-                {{post}}
-            </pre>
         </div>
     </div>
     <PostModal

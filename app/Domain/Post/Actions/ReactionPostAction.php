@@ -20,8 +20,10 @@ class ReactionPostAction
 
         $reaction = PostReaction::query()->where('user_id', $user_id)->where('post_id', $post->id)->first();
         if ($reaction) {
+            $hasReaction=false;
             $reaction ->delete();
         }else {
+            $hasReaction=true;
             PostReaction::create([
                 'post_id' => $post->id,
                 'user_id' => $user_id,
@@ -30,10 +32,9 @@ class ReactionPostAction
 
         }
         $reactions = PostReaction::where('post_id', $post->id)->count();
-
         return response([
-           'success' => true,
-           'reactions' => $reactions
+           'num_of_reactions' => $reactions,
+           'current_user_has_reaction' => $hasReaction
         ]);
 
     }

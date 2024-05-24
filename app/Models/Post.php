@@ -40,7 +40,7 @@ class Post extends Model
         return $this->hasMany(PostReaction::class);
     }
 
-    public function hasReactionFromUser($userId): Boolean
+    public function hasReactionFromUser($userId)
     {
         return $this->reactions()->where('user_id', $userId)->exists();
     }
