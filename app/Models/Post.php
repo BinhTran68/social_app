@@ -40,6 +40,11 @@ class Post extends Model
         return $this->hasMany(PostReaction::class);
     }
 
+    public function comments():HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+
     public function hasReactionFromUser($userId)
     {
         return $this->reactions()->where('user_id', $userId)->exists();
@@ -48,6 +53,11 @@ class Post extends Model
     public function countReactions(): int
     {
         return $this->reactions()->count();
+    }
+
+    public function countComments(): int
+    {
+        return $this->comments()->count();
     }
 
 

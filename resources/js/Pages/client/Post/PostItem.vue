@@ -9,6 +9,9 @@ import {computed, onMounted, ref, watch} from "vue";
 import PostUserHeader from "@/Pages/client/Post/PostUserHeader.vue";
 import {router, usePage} from "@inertiajs/vue3";
 import PostModal from "@/Pages/client/Post/PostModal.vue";
+import TextInput from "@/Components/TextInput.vue";
+import InputFieldWithButton from "@/Components/InputFieldWithButton.vue";
+import CircleImage from "@/Components/CircleImage.vue";
 
 
 const props = defineProps({
@@ -57,6 +60,13 @@ watch(showEditModal, () => {
         postEdit.value = null
     }
 })
+
+
+// Commnent
+const  handleOnsubmitComment = (value) => {
+  alert(value)
+}
+
 
 </script>
 
@@ -114,20 +124,43 @@ watch(showEditModal, () => {
             </div>
 
         </div>
+        <Disclosure v-slot="{ open }">
         <div class="flex flex-col gap-3">
             <ContentPost :body="post.body" :media="post.attachments"/>
-            <div class="flex items-center mx-5 px-2 justify-start gap-5 ">
+            <div class="flex items-center px-[55px] justify-start gap-5 ">
                 <span @click="handleClickReact"
-                      class="cursor-pointer flex items-center gap-2">
+                      class="cursor-pointer flex items-center gap-2 hover:opacity-60">
                       <HeartIcon :fill="post.current_user_has_reaction ? 'red' : 'none'" className="w-8"/>
                      {{post.num_of_reactions}} likes
                 </span>
-                <span class="flex  items-center gap-3">
-                     <CommentIcon/> comments
-                </span>
 
+                <DisclosureButton
+                >
+                   <span
+                       @click="ontoggleCommentSection"
+                       class="flex items-center gap-3 cursor-pointer hover:opacity-60">
+                     <CommentIcon :className="'w-6 h-6'"/> {{ post.num_of_comments || 0}} comments
+                </span>
+                </DisclosureButton>
+            </div>
+            <div class="px-[55px]">
+                    <DisclosurePanel  class="pb-2 pt-4 text-sm text-gray-500">
+                        <div class="flex flex-col  gap-3">
+                            <div class="flex justify-start  gap-3">
+                                <div class="mt-2">
+                                    <CircleImage />
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="font-bold text-gray-700"> Trần Bình</span>
+                                    <span>Em xin giới thiệu về bản thân: E là sinh viên của trường Đại Học Sư Phạm Hà Nội, e có 3 năm kinh nghiệm gia sư dạy trực tiếp, hơn 1 năm kinh nghiệm dạy online. E có phương tiện cá nhân đi lại nên sẽ chủ động về thời gian dạy cho con. </span>
+                                </div>
+                            </div>
+                        </div>
+                    </DisclosurePanel>
+                <InputFieldWithButton @onSubmit="handleOnsubmitComment"/>
             </div>
         </div>
+        </Disclosure>
     </div>
     <PostModal
         v-if="postEdit"
