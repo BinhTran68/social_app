@@ -39,6 +39,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/posts/{post}/comments', [PostCommentController::class, 'store'])
         ->name('post.comment');
 
+    Route::get('/posts/{post}/comments', [PostCommentController::class, 'index'])
+        ->name('post.view_more_comment');
+
+
 });
 
 require __DIR__.'/auth.php';

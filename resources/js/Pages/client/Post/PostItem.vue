@@ -26,6 +26,9 @@ const showEditModal = ref(false)
 const isProcessing = ref(false);
 const postEdit = ref(null);
 const isLike = ref(false);
+
+const currentPageComments = ref(1);
+
 const isMyPost = computed(() => (authUser && authUser.id === post_owner.id))
 const deletePost = () => {
     if (window.confirm('Are you sure you want to delete this post ?')) {
@@ -74,6 +77,35 @@ const  handleOnSubmitComment = (value) => {
     })
 }
 
+const handleViewMoreComments = () => {
+    isProcessing.value  = true
+    axios.get(route('post.view_more_comment', props.post), {
+        params: {
+            page: props.post.current_page_comment+1,
+        },
+    }).then((res) => {
+       props.post.current_page_comment++
+        const prevComments = [...props.post.comments, ...res.data.data]
+       prevComments.sort((a, b) => {
+           const dateA = new Date(a.created_at);
+           console.log(dateA)
+           const dateB = new Date(b.created_at);
+           if (dateA < dateB) {
+               return -1;
+           }
+           if (dateA > dateB) {
+               return 1;
+           }
+           return 0;
+       })
+        props.post.comments = prevComments
+    }).catch(e => {
+
+    }).finally(() => {
+        isProcessing.value  = false
+        comment.value = ''
+    })
+}
 
 </script>
 
@@ -152,13 +184,16 @@ const  handleOnSubmitComment = (value) => {
             </div>
             <div class="px-5">
                     <DisclosurePanel  class="pb-2 pt-4 text-sm text-gray-500 flex flex-col gap-3">
-                            <div v-for="cmt of post.comments" class="flex justify-start gap-3">
+                        <span @click="handleViewMoreComments" v-if="post.num_of_comments > post.comments.length" class="font-weight-bold text-gray-700 cursor-pointer hover:opacity-60">
+                         View more comment
+                        </span>
+                        <div v-for="cmt of post.comments" class="flex justify-start gap-3">
                                 <div class="mt-2">
                                     <CircleImage :src="cmt.user.avatar_url"
                                                  :alt="cmt.user.name"  />
                                 </div>
-                                <div class="">
-                                    <div class="flex flex-col bg-gray-200 py-2 px-3 rounded-md gap-2">
+                                <div class="w-100">
+                                    <div class="flex flex-col bg-gray-200 py-2 px-3 rounded-lg gap-2">
                                         <span class="font-bold text-gray-700">{{ cmt.user.name }}</span>
                                         <span class="text-black">{{ cmt.comment }}</span>
                                     </div>

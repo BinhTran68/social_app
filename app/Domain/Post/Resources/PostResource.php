@@ -8,6 +8,7 @@ use App\Models\PostAttachment;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
+use Ramsey\Uuid\Type\Integer;
 
 /**
  * @property-read Post resource;
@@ -37,7 +38,8 @@ class PostResource extends JsonResource
             'num_of_comments' => $this->resource->countComments(),
             'num_of_reactions' => $this->resource->countReactions(),
             'current_user_has_reaction' => $this->resource->hasReactionFromUser($userId),
-            'comments' =>  CommentResource::collection( $this->resource->latest5Comment())
+            'comments' => CommentResource::collection($this->resource->latest5Comment()->reverse()),
+            'current_page_comment' => 1
         ];
     }
 }
