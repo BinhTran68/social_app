@@ -1,6 +1,7 @@
 <?php
 
 use App\Domain\Home\Controllers\HomeController;
+use App\Domain\Post\Controllers\PostCommentController;
 use App\Domain\Post\Controllers\PostController;
 use App\Domain\Post\Controllers\PostReactionController;
 use App\Domain\User\Controllers\ProfileController;
@@ -33,6 +34,10 @@ Route::middleware('auth')->group(function () {
     // Reaction Post
     Route::post('/posts/{post}/reaction', [PostReactionController::class, 'store'])
         ->name('post.reaction');
+
+    // Post Comments
+    Route::post('/posts/{post}/comments', [PostCommentController::class, 'store'])
+        ->name('post.comment');
 
 });
 

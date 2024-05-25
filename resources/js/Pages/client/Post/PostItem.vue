@@ -9,9 +9,9 @@ import {computed, onMounted, ref, watch} from "vue";
 import PostUserHeader from "@/Pages/client/Post/PostUserHeader.vue";
 import {router, usePage} from "@inertiajs/vue3";
 import PostModal from "@/Pages/client/Post/PostModal.vue";
-import TextInput from "@/Components/TextInput.vue";
 import InputFieldWithButton from "@/Components/InputFieldWithButton.vue";
 import CircleImage from "@/Components/CircleImage.vue";
+import {formatDate} from "../../../Utils/utils.js";
 
 
 const props = defineProps({
@@ -19,15 +19,14 @@ const props = defineProps({
 })
 const post_owner = props.post.user
 const authUser = usePage().props.auth.user
-const showEditModal = ref(false)
-const lenghtDisplay = 120;
 
-// State
+
+const comment = ref('');
+const showEditModal = ref(false)
+const isProcessing = ref(false);
 const postEdit = ref(null);
 const isLike = ref(false);
-
 const isMyPost = computed(() => (authUser && authUser.id === post_owner.id))
-
 const deletePost = () => {
     if (window.confirm('Are you sure you want to delete this post ?')) {
         router.delete(route('post.destroy', props.post), {
@@ -61,10 +60,18 @@ watch(showEditModal, () => {
     }
 })
 
+const  handleOnSubmitComment = (value) => {
 
-// Commnent
-const  handleOnsubmitComment = (value) => {
-  alert(value)
+    axios.post(route('post.comment', props.post), {
+        'comment' : value
+    }).then((res) => {
+        props.post.comments.push(res.data);
+    }).catch(e => {
+
+    }).finally(() => {
+        isProcessing.value  = false
+        comment.value = ''
+    })
 }
 
 
@@ -126,8 +133,8 @@ const  handleOnsubmitComment = (value) => {
         </div>
         <Disclosure v-slot="{ open }">
         <div class="flex flex-col gap-3">
-            <ContentPost :body="post.body" :media="post.attachments"/>
-            <div class="flex items-center px-[55px] justify-start gap-5 ">
+            <ContentPost class="" :body="post.body" :media="post.attachments"/>
+            <div class="flex items-center px-5 justify-start gap-5 ">
                 <span @click="handleClickReact"
                       class="cursor-pointer flex items-center gap-2 hover:opacity-60">
                       <HeartIcon :fill="post.current_user_has_reaction ? 'red' : 'none'" className="w-8"/>
@@ -143,21 +150,37 @@ const  handleOnsubmitComment = (value) => {
                 </span>
                 </DisclosureButton>
             </div>
-            <div class="px-[55px]">
-                    <DisclosurePanel  class="pb-2 pt-4 text-sm text-gray-500">
-                        <div class="flex flex-col  gap-3">
-                            <div class="flex justify-start  gap-3">
+            <div class="px-5">
+                    <DisclosurePanel  class="pb-2 pt-4 text-sm text-gray-500 flex flex-col gap-3">
+                            <div v-for="cmt of post.comments" class="flex justify-start gap-3">
                                 <div class="mt-2">
-                                    <CircleImage />
+                                    <CircleImage :src="cmt.user.avatar_url"
+                                                 :alt="cmt.user.name"  />
                                 </div>
-                                <div class="flex flex-col">
-                                    <span class="font-bold text-gray-700"> Trần Bình</span>
-                                    <span>Em xin giới thiệu về bản thân: E là sinh viên của trường Đại Học Sư Phạm Hà Nội, e có 3 năm kinh nghiệm gia sư dạy trực tiếp, hơn 1 năm kinh nghiệm dạy online. E có phương tiện cá nhân đi lại nên sẽ chủ động về thời gian dạy cho con. </span>
+                                <div class="">
+                                    <div class="flex flex-col bg-gray-200 py-2 px-3 rounded-md gap-2">
+                                        <span class="font-bold text-gray-700">{{ cmt.user.name }}</span>
+                                        <span class="text-black">{{ cmt.comment }}</span>
+                                    </div>
+                                    <small class="text-sm flex gap-3">
+                                        <span>
+                                             {{ formatDate(cmt.updated_at) }}
+                                        </span>
+                                          <span class="text-indigo">
+                                             Like
+                                        </span>
+                                          <span class="text-indigo">
+                                             Reply
+                                        </span>
+                                    </small>
                                 </div>
                             </div>
-                        </div>
                     </DisclosurePanel>
-                <InputFieldWithButton @onSubmit="handleOnsubmitComment"/>
+                <InputFieldWithButton
+                    :isProcessing="isProcessing"
+                    v-model="comment"
+                    @onSubmit="handleOnSubmitComment"
+                />
             </div>
         </div>
         </Disclosure>

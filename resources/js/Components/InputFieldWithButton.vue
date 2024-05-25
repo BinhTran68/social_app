@@ -1,15 +1,28 @@
 <script setup>
+import { ref, computed } from 'vue';
+import { defineProps, defineEmits } from 'vue';
 
-import {ref} from "vue";
+const props = defineProps({
+    isProcessing: {
+        default: false,
+        type: Boolean
+    },
+    modelValue: {
+        default: '',
+        type: String
+    }
+});
 
-const comment = ref('');
+const emit = defineEmits(['update:modelValue', 'onSubmit']);
 
-const emit = defineEmits(['onSubmit', 'Event2'])
+const comment = computed({
+    get: () => props.modelValue,
+    set: (value) => emit('update:modelValue', value)
+});
+
 const handleOnSubmit = () => {
-    emit("onSubmit", comment.value)
-}
-
-
+    emit("onSubmit", comment.value);
+};
 </script>
 
 <template>
@@ -26,11 +39,18 @@ const handleOnSubmit = () => {
                v-model="comment"
                placeholder="Add a comment ..." type="text">
         <div>
-            <button type="submit"
+            <button v-if="!isProcessing" type="submit"
                     :class="['text-blue font-weight-bold']">
-                Post</button>
+                Post
+            </button>
+            <span v-if="isProcessing">
+               <v-progress-circular
+                   color="blue"
+                   indeterminate
+                   size="25"
+               ></v-progress-circular>
+            </span>
         </div>
-
     </form>
 </template>
 
