@@ -2,16 +2,18 @@
 import ContentPost from "@/Pages/client/Post/ContentPost.vue";
 import HeartIcon from "@/Icon/HeartIcon.vue";
 import CommentIcon from "@/Icon/CommentIcon.vue";
-import ShareIcon from "@/Icon/ShareIcon.vue";
-import {Menu, MenuButton, MenuItems, MenuItem, Disclosure, DisclosurePanel, DisclosureButton} from '@headlessui/vue'
+import {Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/vue'
 import EllipsisVerticalIcon from "@/Icon/Ellipsis-VerticalIcon.vue";
-import {computed, onMounted, ref, watch} from "vue";
+import {computed, ref, watch} from "vue";
 import PostUserHeader from "@/Pages/client/Post/PostUserHeader.vue";
 import {router, usePage} from "@inertiajs/vue3";
 import PostModal from "@/Pages/client/Post/PostModal.vue";
 import InputFieldWithButton from "@/Components/InputFieldWithButton.vue";
 import CircleImage from "@/Components/CircleImage.vue";
-import {formatDate} from "../../../Utils/utils.js";
+import {formatDate} from "@/Utils/utils.js";
+import EllipsisIcon from "@/Icon/EllipsisIcon.vue";
+import ProgressCircularIcon from "@/Icon/ProgressCircularIcon.vue";
+import {BASE_URL} from "@/Utils/Constant.js";
 
 
 const props = defineProps({
@@ -27,7 +29,11 @@ const isProcessing = ref(false);
 const postEdit = ref(null);
 const isLike = ref(false);
 
-const currentPageComments = ref(1);
+const commentEdit = ref({
+    id: null,
+    comment: ''
+})
+
 
 const isMyPost = computed(() => (authUser && authUser.id === post_owner.id))
 const deletePost = () => {
@@ -41,10 +47,10 @@ const deletePost = () => {
 const handleClickReact = () => {
     if (props.post.current_user_has_reaction) {
         props.post.current_user_has_reaction = false
-        props.post.num_of_reactions =  props.post.num_of_reactions-1
-    }else  {
+        props.post.num_of_reactions = props.post.num_of_reactions - 1
+    } else {
         props.post.current_user_has_reaction = true
-        props.post.num_of_reactions =  props.post.num_of_reactions + 1
+        props.post.num_of_reactions = props.post.num_of_reactions + 1
     }
     axios.post(route('post.reaction', props.post), {
         reaction: 'like'
@@ -58,53 +64,84 @@ const handleClickReact = () => {
 watch(showEditModal, () => {
     if (showEditModal.value) {
         postEdit.value = props.post
-    }else {
+    } else {
         postEdit.value = null
     }
 })
 
-const  handleOnSubmitComment = (value) => {
-
+const handleOnSubmitComment = (value) => {
     axios.post(route('post.comment', props.post), {
-        'comment' : value
+        'comment': value
     }).then((res) => {
         props.post.comments.push(res.data);
     }).catch(e => {
 
     }).finally(() => {
-        isProcessing.value  = false
+        isProcessing.value = false
+        comment.value = ''
+    })
+}
+
+const handleOnSubmitEditComment = () => {
+
+    axios.put(`${BASE_URL}/posts/${commentEdit.value.id}/comments`, {
+        'comment' : commentEdit.value.comment
+    }).then((res) => {
+        props.post.comments = props.post.comments.map((comment) => {
+            if (comment.id === res.data.id) {
+                return res.data
+            }
+            return comment
+        })
+        handleCancelEditComment()
+    }).catch(e => {
+
+    }).finally(() => {
+        isProcessing.value = false
         comment.value = ''
     })
 }
 
 const handleViewMoreComments = () => {
-    isProcessing.value  = true
+    isProcessing.value = true
     axios.get(route('post.view_more_comment', props.post), {
         params: {
-            page: props.post.current_page_comment+1,
+            page: props.post.current_page_comment + 1,
         },
     }).then((res) => {
-       props.post.current_page_comment++
+        props.post.current_page_comment++
         const prevComments = [...props.post.comments, ...res.data.data]
-       prevComments.sort((a, b) => {
-           const dateA = new Date(a.created_at);
-           console.log(dateA)
-           const dateB = new Date(b.created_at);
-           if (dateA < dateB) {
-               return -1;
-           }
-           if (dateA > dateB) {
-               return 1;
-           }
-           return 0;
-       })
+        prevComments.sort((a, b) => {
+            const dateA = new Date(a.created_at);
+            console.log(dateA)
+            const dateB = new Date(b.created_at);
+            if (dateA < dateB) {
+                return -1;
+            }
+            if (dateA > dateB) {
+                return 1;
+            }
+            return 0;
+        })
         props.post.comments = prevComments
     }).catch(e => {
 
     }).finally(() => {
-        isProcessing.value  = false
+        isProcessing.value = false
         comment.value = ''
     })
+}
+
+const handleOnEditComment = (id, comment) => {
+    commentEdit.value = {
+        id: id,
+        comment: comment
+    }
+}
+
+const handleCancelEditComment = () => {
+    commentEdit.value.id = null;
+    commentEdit.value.comment = '';
 }
 
 </script>
@@ -164,60 +201,126 @@ const handleViewMoreComments = () => {
 
         </div>
         <Disclosure v-slot="{ open }">
-        <div class="flex flex-col gap-3">
-            <ContentPost class="" :body="post.body" :media="post.attachments"/>
-            <div class="flex items-center px-5 justify-start gap-5 ">
+            <div class="flex flex-col gap-3">
+                <ContentPost class="" :body="post.body" :media="post.attachments"/>
+                <div class="flex items-center px-5 justify-start gap-5 ">
                 <span @click="handleClickReact"
                       class="cursor-pointer flex items-center gap-2 hover:opacity-60">
                       <HeartIcon :fill="post.current_user_has_reaction ? 'red' : 'none'" className="w-8"/>
-                     {{post.num_of_reactions}} likes
+                     {{ post.num_of_reactions }} likes
                 </span>
-
-                <DisclosureButton
-                >
+                    <DisclosureButton
+                    >
                    <span
                        @click="ontoggleCommentSection"
                        class="flex items-center gap-3 cursor-pointer hover:opacity-60">
-                     <CommentIcon :className="'w-6 h-6'"/> {{ post.num_of_comments || 0}} comments
+                     <CommentIcon :className="'w-6 h-6'"/> {{ post.num_of_comments || 0 }} comments
                 </span>
-                </DisclosureButton>
-            </div>
-            <div class="px-5">
-                    <DisclosurePanel  class="pb-2 pt-4 text-sm text-gray-500 flex flex-col gap-3">
-                        <span @click="handleViewMoreComments" v-if="post.num_of_comments > post.comments.length" class="font-weight-bold text-gray-700 cursor-pointer hover:opacity-60">
+                    </DisclosureButton>
+                </div>
+                <div class="px-5">
+                    <DisclosurePanel class="pb-2 pt-4 text-sm text-gray-500 flex flex-col gap-3">
+                        <span v-if="isProcessing">
+                            <ProgressCircularIcon/>
+                        </span>
+                        <span v-show="!isProcessing" @click="handleViewMoreComments"
+                              v-if="post.num_of_comments > post.comments.length"
+                              class="font-weight-bold text-gray-700 cursor-pointer hover:opacity-60">
                          View more comment
                         </span>
-                        <div v-for="cmt of post.comments" class="flex justify-start gap-3">
-                                <div class="mt-2">
-                                    <CircleImage :src="cmt.user.avatar_url"
-                                                 :alt="cmt.user.name"  />
+                        <div v-for="(cmt) of post.comments" class="flex justify-start gap-3">
+                            <div class="mt-2">
+                                <CircleImage :src="cmt.user.avatar_url"
+                                             :alt="cmt.user.name"/>
+                            </div>
+                            <div v-if="cmt.id!==commentEdit.id" class="w-100">
+                                <div class="flex flex-col bg-gray-200 py-2 px-3 rounded-lg gap-2">
+                                    <span class="font-bold text-gray-700">{{ cmt.user.name }}</span>
+                                    <span class="text-black">{{ cmt.comment }}</span>
                                 </div>
-                                <div class="w-100">
-                                    <div class="flex flex-col bg-gray-200 py-2 px-3 rounded-lg gap-2">
-                                        <span class="font-bold text-gray-700">{{ cmt.user.name }}</span>
-                                        <span class="text-black">{{ cmt.comment }}</span>
-                                    </div>
-                                    <small class="text-sm flex gap-3">
+                                <div>
+                                </div>
+                                <small class="text-sm flex gap-3">
                                         <span>
                                              {{ formatDate(cmt.updated_at) }}
                                         </span>
-                                          <span class="text-indigo">
+                                    <span class="text-indigo">
                                              Like
                                         </span>
-                                          <span class="text-indigo">
+                                    <span class="text-indigo">
                                              Reply
                                         </span>
-                                    </small>
-                                </div>
+                                </small>
                             </div>
+                            <span class="w-full py-2 flex  flex-col gap-1" v-if="cmt.id === commentEdit.id">
+                                          <InputFieldWithButton
+                                              :is-processing="isProcessing"
+                                              v-model="commentEdit.comment"
+                                              @onSubmit="handleOnSubmitEditComment"
+                                          />
+                                    <span
+                                        @click="handleCancelEditComment"
+                                    >
+                                        Press Esc to
+                                        <span class="text-indigo-500 cursor-pointer hover:underline">
+                                            Cancel
+                                        </span>
+                                    </span>
+                                    </span>
+                            <Menu as="div" class="relative inline-block text-left z-50">
+                                <div v-if="cmt.id !== commentEdit.id" class="">
+                                    <MenuButton
+                                        class="hover:bg-gray-300 py-1 px-1 transition rounded-full flex items-center justify-center">
+                                        <EllipsisIcon class-name="w-4"/>
+                                    </MenuButton>
+                                </div>
+                                <transition
+                                    enter-active-class="transition duration-100 ease-out"
+                                    enter-from-class="transform scale-95 opacity-0"
+                                    enter-to-class="transform scale-100 opacity-100"
+                                    leave-active-class="transition duration-75 ease-in"
+                                    leave-from-class="transform scale-100 opacity-100"
+                                    leave-to-class="transform scale-95 opacity-0"
+                                >
+                                    <MenuItems
+                                        class="absolute right-0 mt-2 w-32 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none"
+                                    >
+                                        <div class="px-1 py-1">
+                                            <MenuItem v-slot="{ active }">
+                                                <button
+                                                    @click="handleOnEditComment(cmt.id, cmt.comment)"
+                                                    :class="[
+                                 active ? 'bg-indigo-500 text-white' : 'text-gray-900',
+                                'group flex w-full items-center rounded-md px-2 py-2 text-sm',
+                                    ]"
+                                                >
+                                                    Edit
+                                                </button>
+                                            </MenuItem>
+                                            <MenuItem v-slot="{ active }">
+                                                <button
+                                                    :class="[
+                                 active ? 'bg-indigo-500 text-white' : 'text-red-700',
+                                'group flex w-full items-center rounded-md px-2 py-2 text-sm ',
+                                    ]"
+                                                    @click="deletePost"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </MenuItem>
+                                        </div>
+                                    </MenuItems>
+                                </transition>
+                            </Menu>
+                        </div>
                     </DisclosurePanel>
-                <InputFieldWithButton
-                    :isProcessing="isProcessing"
-                    v-model="comment"
-                    @onSubmit="handleOnSubmitComment"
-                />
+                    <InputFieldWithButton
+                        :isProcessing="isProcessing"
+                        v-model="comment"
+                        @onSubmit="handleOnSubmitComment"
+                    />
+                </div>
             </div>
-        </div>
         </Disclosure>
     </div>
     <PostModal

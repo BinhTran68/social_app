@@ -10,6 +10,18 @@ const props = defineProps({
     modelValue: {
         default: '',
         type: String
+    },
+    placeholder : {
+        default: 'Add a comment ...',
+        type: String
+    },
+    submitText : {
+        default: 'Post',
+        type: String
+    },
+    required : {
+        default: true,
+        type: Boolean
     }
 });
 
@@ -37,11 +49,14 @@ const handleOnSubmit = () => {
         focus:ring-0
         w-full"
                v-model="comment"
-               placeholder="Add a comment ..." type="text">
+               :placeholder="placeholder"
+               type="text"
+                :required="required"
+        >
         <div>
             <button v-if="!isProcessing" type="submit"
                     :class="['text-blue font-weight-bold']">
-                Post
+                {{ submitText }}
             </button>
             <span v-if="isProcessing">
                <v-progress-circular

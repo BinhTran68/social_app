@@ -34,13 +34,13 @@ Route::middleware('auth')->group(function () {
     // Reaction Post
     Route::post('/posts/{post}/reaction', [PostReactionController::class, 'store'])
         ->name('post.reaction');
-
     // Post Comments
     Route::post('/posts/{post}/comments', [PostCommentController::class, 'store'])
         ->name('post.comment');
-
     Route::get('/posts/{post}/comments', [PostCommentController::class, 'index'])
         ->name('post.view_more_comment');
+    Route::put('/posts/{comment}/comments', [PostCommentController::class, 'update'])
+        ->name('post.comment-edit');
 
 
 });

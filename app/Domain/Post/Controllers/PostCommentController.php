@@ -3,12 +3,13 @@
 namespace App\Domain\Post\Controllers;
 
 use App\Domain\Post\Actions\CreateCommentAction;
+use App\Domain\Post\Actions\UpdateCommentAction;
 use App\Domain\Post\Requests\CommentRequest;
+use App\Domain\Post\Requests\UpdateCommentPostRequest;
 use App\Domain\Post\Resources\CommentResource;
+use App\Models\Comment;
 use App\Models\Post;
-
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class PostCommentController
 {
@@ -24,5 +25,10 @@ class PostCommentController
     {
         $createCommentAction  = new CreateCommentAction();
         return  $createCommentAction->handle($request, $post);
+    }
+
+    public function update(UpdateCommentPostRequest $request, Comment $comment, UpdateCommentAction $updateCommentAction)
+    {
+      return  $updateCommentAction->handle($request,$comment);
     }
 }
