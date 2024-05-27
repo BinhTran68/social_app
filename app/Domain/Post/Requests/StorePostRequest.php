@@ -20,7 +20,7 @@ class StorePostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'body' => ['nullable','max:5'],
+            'body' => ['nullable'],
             'attachments' =>
                 'array|max:2',
                 function ($attribute, $value, $fail) {

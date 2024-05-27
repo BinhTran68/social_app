@@ -85,7 +85,7 @@ const handleOnSubmitComment = (value) => {
 const handleOnSubmitEditComment = () => {
 
     axios.put(`${BASE_URL}/posts/${commentEdit.value.id}/comments`, {
-        'comment' : commentEdit.value.comment
+        'comment': commentEdit.value.comment
     }).then((res) => {
         props.post.comments = props.post.comments.map((comment) => {
             if (comment.id === res.data.id) {
@@ -100,6 +100,17 @@ const handleOnSubmitEditComment = () => {
         isProcessing.value = false
         comment.value = ''
     })
+}
+
+const handleDeleteComment = (id) => {
+    if (window.confirm('Are you sure you want to delete this comment ?')) {
+        axios.delete(route('post.comment.destroy', id))
+            .then((res) => {
+                props.post.comments = props.post.comments.filter((comment) => comment.id !== id)
+            }).catch((e) => {
+
+        })
+    }
 }
 
 const handleViewMoreComments = () => {
@@ -142,6 +153,42 @@ const handleOnEditComment = (id, comment) => {
 const handleCancelEditComment = () => {
     commentEdit.value.id = null;
     commentEdit.value.comment = '';
+}
+
+const handleReactionComment = (id) => {
+    const comment = props.post.comments.find((cmt) => cmt.id === id)
+    if (comment.current_user_has_reaction_comment) {
+        comment.current_user_has_reaction_comment = false
+        comment.num_of_reaction_comments = comment.num_of_reaction_comments - 1
+    }else {
+        comment.current_user_has_reaction_comment = true
+        comment.num_of_reaction_comments = comment.num_of_reaction_comments + 1
+    }
+    axios.post(route('post.comment_reaction', id ), {
+        'reaction' : 'like'
+    }).then((response) => {
+        props.post.comments =  props.post.comments.map((cmt) => {
+            if (cmt.id === id) {
+                return {
+                    ...cmt,
+                    num_of_reaction_comments: response.data.num_of_reaction_comments,
+                    current_user_has_reaction_comment: comment.current_user_has_reaction_comment
+                };
+            }
+            return  cmt
+        })
+    }).catch(e => {
+        if (comment.current_user_has_reaction_comment) {
+            comment.current_user_has_reaction_comment = false;
+            comment.num_of_reaction_comments -= 1;
+        } else {
+            comment.current_user_has_reaction_comment = true;
+            comment.num_of_reaction_comments += 1;
+        }
+    }).finally(() => {
+        isProcessing.value = false
+        comment.value = ''
+    })
 }
 
 </script>
@@ -205,9 +252,13 @@ const handleCancelEditComment = () => {
                 <ContentPost class="" :body="post.body" :media="post.attachments"/>
                 <div class="flex items-center px-5 justify-start gap-5 ">
                 <span @click="handleClickReact"
-                      class="cursor-pointer flex items-center gap-2 hover:opacity-60">
-                      <HeartIcon :fill="post.current_user_has_reaction ? 'red' : 'none'" className="w-8"/>
+                      class="cursor-pointer flex items-center gap-2 ">
+                    <span class="w-8 h-8">
+                           <HeartIcon :fill="post.current_user_has_reaction ? 'red' : 'none'" className="w-7 hover:w-8"/>
+                    </span>
+                     <span>
                      {{ post.num_of_reactions }} likes
+                    </span>
                 </span>
                     <DisclosureButton
                     >
@@ -220,14 +271,19 @@ const handleCancelEditComment = () => {
                 </div>
                 <div class="px-5">
                     <DisclosurePanel class="pb-2 pt-4 text-sm text-gray-500 flex flex-col gap-3">
-                        <span v-if="isProcessing">
-                            <ProgressCircularIcon/>
+                        <div class="flex items-center  justify-between">
+                            <span v-if="isProcessing">
+                                <ProgressCircularIcon/>
+                            </span>
+                            <span v-show="!isProcessing" @click="handleViewMoreComments"
+                                  v-if="post.num_of_comments > post.comments.length"
+                                  class="font-weight-bold text-gray-700 cursor-pointer hover:opacity-60">
+                             View more comment
                         </span>
-                        <span v-show="!isProcessing" @click="handleViewMoreComments"
-                              v-if="post.num_of_comments > post.comments.length"
-                              class="font-weight-bold text-gray-700 cursor-pointer hover:opacity-60">
-                         View more comment
-                        </span>
+                            <DisclosureButton class="font-weight-bold text-gray-700 cursor-pointer hover:opacity-60">
+                                Hide comments
+                            </DisclosureButton>
+                        </div>
                         <div v-for="(cmt) of post.comments" class="flex justify-start gap-3">
                             <div class="mt-2">
                                 <CircleImage :src="cmt.user.avatar_url"
@@ -244,10 +300,17 @@ const handleCancelEditComment = () => {
                                         <span>
                                              {{ formatDate(cmt.updated_at) }}
                                         </span>
-                                    <span class="text-indigo">
-                                             Like
+                                    <span class="flex items-center  justify-start gap-1 ">
+                                            <span @click="handleReactionComment(cmt.id)" class="cursor-pointer w-5" >
+                                                <HeartIcon :fill="cmt.current_user_has_reaction_comment ? 'red' : 'none'"
+                                                       className="w-4 hover:w-5"/>
+                                            </span>
+                                            <span>
+                                                {{ cmt.num_of_reaction_comments }}
+                                                 likes
+                                            </span>
                                         </span>
-                                    <span class="text-indigo">
+                                    <span class="text-indigo cursor-pointer">
                                              Reply
                                         </span>
                                 </small>
@@ -303,7 +366,7 @@ const handleCancelEditComment = () => {
                                  active ? 'bg-indigo-500 text-white' : 'text-red-700',
                                 'group flex w-full items-center rounded-md px-2 py-2 text-sm ',
                                     ]"
-                                                    @click="deletePost"
+                                                    @click="handleDeleteComment(cmt.id)"
                                                 >
                                                     Delete
                                                 </button>

@@ -2,6 +2,7 @@
 
 namespace App\Domain\Post\Controllers;
 
+use App\Domain\Post\Actions\CommentReactionAction;
 use App\Domain\Post\Actions\CreateCommentAction;
 use App\Domain\Post\Actions\UpdateCommentAction;
 use App\Domain\Post\Requests\CommentRequest;
@@ -30,5 +31,16 @@ class PostCommentController
     public function update(UpdateCommentPostRequest $request, Comment $comment, UpdateCommentAction $updateCommentAction)
     {
       return  $updateCommentAction->handle($request,$comment);
+    }
+    public function destroy (Comment $comment)
+    {
+        $comment->delete();
+        return response(200);
+    }
+
+    public function reaction(Request $request,Comment $comment)
+    {
+        $commentReactionAction  = new CommentReactionAction();
+        return $commentReactionAction->handle($request, $comment);
     }
 }

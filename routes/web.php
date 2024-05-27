@@ -41,6 +41,13 @@ Route::middleware('auth')->group(function () {
         ->name('post.view_more_comment');
     Route::put('/posts/{comment}/comments', [PostCommentController::class, 'update'])
         ->name('post.comment-edit');
+    Route::delete('/posts/{comment}/comments', [PostCommentController::class, 'destroy'])
+        ->name('post.comment.destroy');
+
+    // Reaction comment
+    Route::post('/posts/comments/{comment}/reaction', [PostCommentController::class, 'reaction'])
+        ->name('post.comment_reaction');
+
 
 
 });

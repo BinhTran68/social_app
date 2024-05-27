@@ -2,7 +2,7 @@
 
 namespace App\Domain\Post\Actions;
 
-use App\Domain\Post\Enum\PostReactionEnum;
+use App\Domain\Post\Enum\ReactionEnum;
 use App\Models\Post;
 use App\Models\PostReaction;
 use Illuminate\Http\Request;
@@ -14,7 +14,7 @@ class ReactionPostAction
     public function handle(Request $request, Post $post)
     {
         $data = $request->validate([
-           'reaction' => Rule::enum(PostReactionEnum::class)
+           'reaction' => Rule::enum(ReactionEnum::class)
         ]);
         $user_id = Auth::id();
 
