@@ -16,9 +16,9 @@ class HomeController extends Controller
         $userId = Auth::id();
 
         $posts = Post::query()
-                ->withCount('reactions')
-                ->latest()
-                ->paginate(20);
+            ->withCount('reactions')
+            ->latest()
+            ->paginate(20);
         return Inertia::render('client/Home/Home', [
             'posts' => PostResource::collection($posts)
         ]);

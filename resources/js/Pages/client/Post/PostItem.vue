@@ -94,8 +94,6 @@ const handleOnSubmitEditComment = () => {
             return comment
         })
         handleCancelEditComment()
-    }).catch(e => {
-
     }).finally(() => {
         isProcessing.value = false
         comment.value = ''
@@ -124,7 +122,6 @@ const handleViewMoreComments = () => {
         const prevComments = [...props.post.comments, ...res.data.data]
         prevComments.sort((a, b) => {
             const dateA = new Date(a.created_at);
-            console.log(dateA)
             const dateB = new Date(b.created_at);
             if (dateA < dateB) {
                 return -1;
@@ -135,7 +132,7 @@ const handleViewMoreComments = () => {
             return 0;
         })
         props.post.comments = prevComments
-    }).catch(e => {
+    }).catch(() => {
 
     }).finally(() => {
         isProcessing.value = false
@@ -155,29 +152,21 @@ const handleCancelEditComment = () => {
     commentEdit.value.comment = '';
 }
 
-const handleReactionComment = (id) => {
-    const comment = props.post.comments.find((cmt) => cmt.id === id)
-    if (comment.current_user_has_reaction_comment) {
-        comment.current_user_has_reaction_comment = false
-        comment.num_of_reaction_comments = comment.num_of_reaction_comments - 1
-    }else {
-        comment.current_user_has_reaction_comment = true
-        comment.num_of_reaction_comments = comment.num_of_reaction_comments + 1
-    }
-    axios.post(route('post.comment_reaction', id ), {
-        'reaction' : 'like'
-    }).then((response) => {
-        props.post.comments =  props.post.comments.map((cmt) => {
-            if (cmt.id === id) {
-                return {
-                    ...cmt,
-                    num_of_reaction_comments: response.data.num_of_reaction_comments,
-                    current_user_has_reaction_comment: comment.current_user_has_reaction_comment
-                };
-            }
-            return  cmt
-        })
-    }).catch(e => {
+const handleReactionComment = (id, parent_id) => {
+    let comment, subComment;
+
+    if (parent_id) {
+        comment = props.post.comments.find((cmt) => cmt.id === parent_id);
+        subComment = comment.sub_comments.find((cmt) => cmt.id === id);
+        if (subComment.current_user_has_reaction_comment) {
+            subComment.current_user_has_reaction_comment = false;
+            subComment.num_of_reaction_comments -= 1;
+        } else {
+            subComment.current_user_has_reaction_comment = true;
+            subComment.num_of_reaction_comments += 1;
+        }
+    } else {
+        comment = props.post.comments.find((cmt) => cmt.id === id);
         if (comment.current_user_has_reaction_comment) {
             comment.current_user_has_reaction_comment = false;
             comment.num_of_reaction_comments -= 1;
@@ -185,11 +174,60 @@ const handleReactionComment = (id) => {
             comment.current_user_has_reaction_comment = true;
             comment.num_of_reaction_comments += 1;
         }
-    }).finally(() => {
-        isProcessing.value = false
-        comment.value = ''
+    }
+
+    axios.post(route('post.comment_reaction', id), {
+        'reaction': 'like'
+    }).then((response) => {
+        if (!parent_id) {
+            props.post.comments = props.post.comments.map((cmt) => {
+                if (cmt.id === id) {
+                    return {
+                        ...cmt,
+                        num_of_reaction_comments: response.data.num_of_reaction_comments,
+                    };
+                }
+                return cmt;
+            });
+        } else {
+            props.post.comments = props.post.comments.map((cmt) => {
+                if (cmt.id === parent_id) {
+                    return {
+                        ...cmt,
+                        sub_comments: cmt.sub_comments.map((sCmt) => {
+                            if (sCmt.id === id) {
+                                return {
+                                    ...sCmt,
+                                    num_of_reaction_comments: response.data.num_of_reaction_comments,
+                                };
+                            }
+                            return sCmt;
+                        })
+                    };
+                }
+                return cmt;
+            });
+        }
+    }).catch(() => {
+        if (parent_id) {
+            if (subComment.current_user_has_reaction_comment) {
+                subComment.current_user_has_reaction_comment = false;
+                subComment.num_of_reaction_comments -= 1;
+            } else {
+                subComment.current_user_has_reaction_comment = true;
+                subComment.num_of_reaction_comments += 1;
+            }
+        } else {
+            if (comment.current_user_has_reaction_comment) {
+                comment.current_user_has_reaction_comment = false;
+                comment.num_of_reaction_comments -= 1;
+            } else {
+                comment.current_user_has_reaction_comment = true;
+                comment.num_of_reaction_comments += 1;
+            }
+        }
     })
-}
+};
 
 </script>
 
@@ -205,7 +243,6 @@ const handleReactionComment = (id) => {
                             <EllipsisVerticalIcon className="w-5 h-5 text-gray-700"/>
                         </MenuButton>
                     </div>
-
                     <transition
                         enter-active-class="transition duration-100 ease-out"
                         enter-from-class="transform scale-95 opacity-0"
@@ -254,7 +291,8 @@ const handleReactionComment = (id) => {
                 <span @click="handleClickReact"
                       class="cursor-pointer flex items-center gap-2 ">
                     <span class="w-8 h-8">
-                           <HeartIcon :fill="post.current_user_has_reaction ? 'red' : 'none'" className="w-7 hover:w-8"/>
+                           <HeartIcon :fill="post.current_user_has_reaction ? 'red' : 'none'"
+                                      className="w-7 hover:w-8"/>
                     </span>
                      <span>
                      {{ post.num_of_reactions }} likes
@@ -290,30 +328,79 @@ const handleReactionComment = (id) => {
                                              :alt="cmt.user.name"/>
                             </div>
                             <div v-if="cmt.id!==commentEdit.id" class="w-100">
-                                <div class="flex flex-col bg-gray-200 py-2 px-3 rounded-lg gap-2">
+                                <div class="flex flex-col bg-gray-200 py-2 px-3 rounded-lg ">
                                     <span class="font-bold text-gray-700">{{ cmt.user.name }}</span>
                                     <span class="text-black">{{ cmt.comment }}</span>
                                 </div>
                                 <div>
                                 </div>
-                                <small class="text-sm flex gap-3">
+                                <span class="text-sm flex gap-3">
                                         <span>
                                              {{ formatDate(cmt.updated_at) }}
                                         </span>
                                     <span class="flex items-center  justify-start gap-1 ">
-                                            <span @click="handleReactionComment(cmt.id)" class="cursor-pointer w-5" >
-                                                <HeartIcon :fill="cmt.current_user_has_reaction_comment ? 'red' : 'none'"
-                                                       className="w-4 hover:w-5"/>
+                                            <span @click="handleReactionComment(cmt.id, undefined)"
+                                                  class="cursor-pointer w-5">
+                                                <HeartIcon
+                                                    :fill="cmt.current_user_has_reaction_comment ? 'red' : 'none'"
+                                                    className="w-4 hover:w-5"/>
                                             </span>
                                             <span>
                                                 {{ cmt.num_of_reaction_comments }}
                                                  likes
                                             </span>
                                         </span>
-                                    <span class="text-indigo cursor-pointer">
+                                         <span class="text-indigo cursor-pointer">
                                              Reply
                                         </span>
-                                </small>
+                                </span>
+                                <div class="flex items-center  justify-between">
+                                    <span v-if="cmt.num_of_sub_comments > 0"
+                                          class="text-indigo-500 font-weight-bold cursor-pointer">
+                                            View more replies
+                                    </span>
+                                    <span class="text-indigo-500 font-weight-bold ">
+                                        Total {{ cmt.num_of_sub_comments }} replies
+                                    </span>
+                                </div>
+                                <div v-for="subCmt in cmt.sub_comments" class="flex  justify-start gap-2">
+                                    <div class="mt-2">
+                                        <CircleImage :src="subCmt.user.avatar_url"
+                                                     :alt="subCmt.user.name"
+                                        />
+                                    </div>
+                                    <div v-if="subCmt.id!==commentEdit.id" class="w-100">
+                                        <div class="flex flex-col bg-gray-200 py-2 px-3 rounded-lg ">
+                                            <span class="font-bold text-gray-700">{{ cmt.user.name }}</span>
+                                            <span class="text-black">{{ cmt.comment }}</span>
+                                        </div>
+                                        <div>
+                                        </div>
+                                        <span class="text-sm flex gap-3">
+                                        <span>
+                                             {{ formatDate(subCmt.updated_at) }}
+                                        </span>
+                                    <span class="flex items-center  justify-start gap-1 ">
+                                            <span @click="handleReactionComment(subCmt.id, cmt.id)"
+                                                  class="cursor-pointer w-5">
+                                                <HeartIcon
+                                                    :fill="subCmt.current_user_has_reaction_comment ? 'red' : 'none'"
+                                                    className="w-4 hover:w-5"/>
+                                            </span>
+                                            <span>
+                                                {{ subCmt.num_of_reaction_comments }}
+                                                 likes
+                                            </span>
+                                        </span>
+                                         <span class="text-indigo cursor-pointer">
+                                             Reply
+                                        </span>
+                                </span>
+                                        <div class="flex items-center justify-start gap-2">
+
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <span class="w-full py-2 flex  flex-col gap-1" v-if="cmt.id === commentEdit.id">
                                           <InputFieldWithButton

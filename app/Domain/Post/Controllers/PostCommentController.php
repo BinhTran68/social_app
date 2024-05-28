@@ -17,7 +17,7 @@ class PostCommentController
     public function index(Request $request,Post $post)
     {
         $page = $request->query('page', 1);
-        $comments = $post->comments()->latest()->paginate(5, ['*'], 'page', $page);
+        $comments = $post->comments()->whereNull('parent_id')->latest()->paginate(5, ['*'], 'page', $page);
         return CommentResource::collection($comments);
 
     }

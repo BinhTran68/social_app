@@ -11,7 +11,7 @@ class Comment extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['id','post_id', 'comment', 'user_id'];
+    protected $fillable = ['id','post_id', 'comment', 'user_id', 'parent_id'];
 
     public function user():BelongsTo
     {
@@ -37,6 +37,27 @@ class Comment extends Model
     {
         return $this->reactions()->where('user_id', $userId)->exists();
     }
+
+    public function subComments(): HasMany
+    {
+        return $this->hasMany(Comment::class, 'parent_id');
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(Comment::class, 'parent_id');
+    }
+
+    public function countSubComments():int
+    {
+        return $this->subComments()->count();
+    }
+
+    public function latest3SubComments(): HasMany
+    {
+        return $this->hasMany(Comment::class, 'parent_id')->latest()->limit(3);
+    }
+
 
 
 }
