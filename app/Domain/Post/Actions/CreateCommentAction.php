@@ -16,7 +16,8 @@ class CreateCommentAction
         $comment = Comment::create([
             'post_id' => $post->id,
             'comment' => $data['comment'],
-            'user_id' => Auth::id()
+            'user_id' => Auth::id(),
+            'parent_id' => $data['parent_id'],
         ]);
         return response( CommentResource::make($comment), 201);
     }

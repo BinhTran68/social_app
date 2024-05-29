@@ -1,6 +1,9 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { defineProps, defineEmits } from 'vue';
+import {usePage} from "@inertiajs/vue3";
+
+const authUser = usePage().props.auth.user
 
 const props = defineProps({
     isProcessing: {
@@ -12,7 +15,7 @@ const props = defineProps({
         type: String
     },
     placeholder : {
-        default: 'Add a comment ...',
+        default: null,
         type: String
     },
     submitText : {
@@ -22,8 +25,23 @@ const props = defineProps({
     required : {
         default: true,
         type: Boolean
+    },
+    tagToUser : {
+        default : null
+    },
+    parentCmtId: {
+        default: null,
     }
 });
+
+const computedPlaceholder = computed(() => {
+    if (props.placeholder) {
+        return props.placeholder
+    } else {
+        return `Comment as ${authUser.name}`
+    }
+})
+
 
 const emit = defineEmits(['update:modelValue', 'onSubmit']);
 
@@ -33,12 +51,16 @@ const comment = computed({
 });
 
 const handleOnSubmit = () => {
-    emit("onSubmit", comment.value);
+    emit("onSubmit", { content: comment.value, parentCmtId: props.parentCmtId});
 };
 </script>
 
 <template>
-    <form @submit.prevent="handleOnSubmit" class="flex items-center justify-start">
+    <form @submit.prevent="handleOnSubmit" class="flex items-center gap-2 justify-start">
+        <button v-if="tagToUser" type="submit"
+                :class="['text-indigo font-weight-bold text-no-wrap']">
+            {{ tagToUser.name }}
+        </button>
         <input class="border-b border-r
         focus:outline-none
         focus:border-b-2
@@ -49,7 +71,7 @@ const handleOnSubmit = () => {
         focus:ring-0
         w-full"
                v-model="comment"
-               :placeholder="placeholder"
+               :placeholder="computedPlaceholder"
                type="text"
                 :required="required"
         >

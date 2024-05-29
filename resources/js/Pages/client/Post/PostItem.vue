@@ -22,11 +22,22 @@ const props = defineProps({
 const post_owner = props.post.user
 const authUser = usePage().props.auth.user
 
-
-const comment = ref('');
+const commentRef = ref('');
+const replyCommentContent = ref('');
 const showEditModal = ref(false)
 const isProcessing = ref(false);
 const postEdit = ref(null);
+const replyComment = ref({
+    parentId: null,
+    replyUser: null,
+    subCmtId: null
+});
+const replySubComment = ref({
+    parentId: null,
+    subCommentId: null,
+    replyUser: null
+});
+
 const isLike = ref(false);
 
 const commentEdit = ref({
@@ -69,21 +80,35 @@ watch(showEditModal, () => {
     }
 })
 
-const handleOnSubmitComment = (value) => {
+const handleOnSubmitComment = ({content, parentCmtId}) => {
     axios.post(route('post.comment', props.post), {
-        'comment': value
+        'comment': content,
+        'parent_id': parentCmtId
     }).then((res) => {
         props.post.comments.push(res.data);
+        if (parentCmtId) {
+            const parentComment = props.post.comments.find((cmt) => cmt.id === parentCmtId)
+            parentComment.sub_comments.push(res.data);
+            props.post.comments = props.post.comments.map((cmt) => {
+                if (cmt.id === parentCmtId) {
+                    return parentComment
+                } else {
+                    return cmt
+                }
+            })
+        }
     }).catch(e => {
 
     }).finally(() => {
         isProcessing.value = false
-        comment.value = ''
+        commentRef.value = ''
+        replyCommentContent.value = ''
+        replyComment.value.parentId = null
+        replyComment.value.replyUser = null
     })
 }
 
 const handleOnSubmitEditComment = () => {
-
     axios.put(`${BASE_URL}/posts/${commentEdit.value.id}/comments`, {
         'comment': commentEdit.value.comment
     }).then((res) => {
@@ -96,7 +121,8 @@ const handleOnSubmitEditComment = () => {
         handleCancelEditComment()
     }).finally(() => {
         isProcessing.value = false
-        comment.value = ''
+        commentRef.value = ''
+        replyCommentContent.value = ''
     })
 }
 
@@ -136,7 +162,6 @@ const handleViewMoreComments = () => {
 
     }).finally(() => {
         isProcessing.value = false
-        comment.value = ''
     })
 }
 
@@ -152,11 +177,11 @@ const handleCancelEditComment = () => {
     commentEdit.value.comment = '';
 }
 
-const handleReactionComment = (id, parent_id) => {
+const handleReactionComment = (id, parentId) => {
     let comment, subComment;
 
-    if (parent_id) {
-        comment = props.post.comments.find((cmt) => cmt.id === parent_id);
+    if (parentId) {
+        comment = props.post.comments.find((cmt) => cmt.id === parentId);
         subComment = comment.sub_comments.find((cmt) => cmt.id === id);
         if (subComment.current_user_has_reaction_comment) {
             subComment.current_user_has_reaction_comment = false;
@@ -179,7 +204,7 @@ const handleReactionComment = (id, parent_id) => {
     axios.post(route('post.comment_reaction', id), {
         'reaction': 'like'
     }).then((response) => {
-        if (!parent_id) {
+        if (!parentId) {
             props.post.comments = props.post.comments.map((cmt) => {
                 if (cmt.id === id) {
                     return {
@@ -191,7 +216,7 @@ const handleReactionComment = (id, parent_id) => {
             });
         } else {
             props.post.comments = props.post.comments.map((cmt) => {
-                if (cmt.id === parent_id) {
+                if (cmt.id === parentId) {
                     return {
                         ...cmt,
                         sub_comments: cmt.sub_comments.map((sCmt) => {
@@ -209,7 +234,7 @@ const handleReactionComment = (id, parent_id) => {
             });
         }
     }).catch(() => {
-        if (parent_id) {
+        if (parentId) {
             if (subComment.current_user_has_reaction_comment) {
                 subComment.current_user_has_reaction_comment = false;
                 subComment.num_of_reaction_comments -= 1;
@@ -229,9 +254,21 @@ const handleReactionComment = (id, parent_id) => {
     })
 };
 
+
+const replyToComment = (parentId, user) => {
+    replyComment.value.parentId = parentId
+    replyComment.value.replyUser = user
+}
+
+const handleCancelReplyComment = () => {
+    replyComment.value.parentId = null
+    replyComment.value.replyUser = null
+}
+
 </script>
 
 <template>
+
     <div class="bg-white flex flex-col gap-4 py-3 rounded-md">
         <div class="flex items-center justify-between px-5 gap-3">
             <PostUserHeader :post="post"/>
@@ -350,7 +387,8 @@ const handleReactionComment = (id, parent_id) => {
                                                  likes
                                             </span>
                                         </span>
-                                         <span class="text-indigo cursor-pointer">
+                                         <span @click="replyToComment(cmt.id, cmt.user)"
+                                               class="text-indigo cursor-pointer">
                                              Reply
                                         </span>
                                 </span>
@@ -371,8 +409,8 @@ const handleReactionComment = (id, parent_id) => {
                                     </div>
                                     <div v-if="subCmt.id!==commentEdit.id" class="w-100">
                                         <div class="flex flex-col bg-gray-200 py-2 px-3 rounded-lg ">
-                                            <span class="font-bold text-gray-700">{{ cmt.user.name }}</span>
-                                            <span class="text-black">{{ cmt.comment }}</span>
+                                            <span class="font-bold text-gray-700">{{ subCmt.user.name }}</span>
+                                            <span class="text-black">{{ subCmt.comment }}</span>
                                         </div>
                                         <div>
                                         </div>
@@ -392,14 +430,28 @@ const handleReactionComment = (id, parent_id) => {
                                                  likes
                                             </span>
                                         </span>
-                                         <span class="text-indigo cursor-pointer">
+                                         <span @click="replyToComment(cmt.id, subCmt.user)"
+                                               class="text-indigo cursor-pointer">
                                              Reply
                                         </span>
-                                </span>
+                                    </span>
                                         <div class="flex items-center justify-start gap-2">
 
                                         </div>
                                     </div>
+                                </div>
+                                <div v-if="cmt.id === replyComment.parentId">
+                                    <InputFieldWithButton
+                                        :tagToUser="replyComment.replyUser"
+                                        :isProcessing="isProcessing"
+                                        v-model="replyCommentContent"
+                                        :parent-cmt-id="cmt.id"
+                                        @onSubmit="handleOnSubmitComment"
+                                    />
+                                    <span @click="handleCancelReplyComment"
+                                          class="font-weight-bold text-indigo-500 cursor-pointer">
+                                        Cancel
+                                    </span>
                                 </div>
                             </div>
                             <span class="w-full py-2 flex  flex-col gap-1" v-if="cmt.id === commentEdit.id">
@@ -466,7 +518,7 @@ const handleReactionComment = (id, parent_id) => {
                     </DisclosurePanel>
                     <InputFieldWithButton
                         :isProcessing="isProcessing"
-                        v-model="comment"
+                        v-model="commentRef"
                         @onSubmit="handleOnSubmitComment"
                     />
                 </div>

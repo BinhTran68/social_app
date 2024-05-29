@@ -38,7 +38,7 @@ class PostResource extends JsonResource
             'num_of_comments' => $this->resource->countComments(),
             'num_of_reactions' => $this->resource->countReactions(),
             'current_user_has_reaction' => $this->resource->hasReactionFromUser($userId),
-            'comments' => CommentResource::collection($this->resource->latest5Comment()->whereNull('parent_id')->reverse()),
+            'comments' => CommentResource::collection($this->resource->latest5Comment()->reverse()),
             'current_page_comment' => 1
         ];
     }

@@ -62,7 +62,7 @@ class Post extends Model
 
     public function latest5Comment()
     {
-        return $this->hasMany(Comment::class)->latest()->limit(5)->get();
+        return $this->hasMany(Comment::class)->latest()->whereNull('parent_id')->limit(5)->get();
     }
 
 
