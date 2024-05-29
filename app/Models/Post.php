@@ -12,7 +12,6 @@ use phpDocumentor\Reflection\Types\Boolean;
 class Post extends Model
 {
     use HasFactory;
-    use SoftDeletes;
 
     protected $fillable = ['user_id', 'body'];
 
@@ -32,9 +31,19 @@ class Post extends Model
     }
 
 
-    // One Post have Many PostReaction
-    // reactions_count  = ->withCount('reactions')
-    // relation + count
+    protected static function boot()
+    {
+        parent::boot();
+        static::deleting(function($post) {
+            $attachments = $post->attachments()->get();
+            foreach ($attachments as $attachment) {
+                $attachment->delete();
+            }
+        });
+    }
+
+
+
     public function reactions():HasMany
     {
         return $this->hasMany(PostReaction::class);

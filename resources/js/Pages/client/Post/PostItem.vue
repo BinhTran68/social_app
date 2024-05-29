@@ -30,7 +30,7 @@ const postEdit = ref(null);
 const replyComment = ref({
     parentId: null,
     replyUser: null,
-    subCmtId: null
+    subCmtId : null
 });
 const replySubComment = ref({
     parentId: null,
@@ -92,7 +92,7 @@ const handleOnSubmitComment = ({content, parentCmtId}) => {
             props.post.comments = props.post.comments.map((cmt) => {
                 if (cmt.id === parentCmtId) {
                     return parentComment
-                } else {
+                }else {
                     return cmt
                 }
             })
@@ -103,7 +103,7 @@ const handleOnSubmitComment = ({content, parentCmtId}) => {
         isProcessing.value = false
         commentRef.value = ''
         replyCommentContent.value = ''
-        replyComment.value.parentId = null
+            replyComment.value.parentId = null
         replyComment.value.replyUser = null
     })
 }
@@ -256,8 +256,8 @@ const handleReactionComment = (id, parentId) => {
 
 
 const replyToComment = (parentId, user) => {
-    replyComment.value.parentId = parentId
-    replyComment.value.replyUser = user
+        replyComment.value.parentId = parentId
+        replyComment.value.replyUser = user
 }
 
 const handleCancelReplyComment = () => {
@@ -448,8 +448,7 @@ const handleCancelReplyComment = () => {
                                         :parent-cmt-id="cmt.id"
                                         @onSubmit="handleOnSubmitComment"
                                     />
-                                    <span @click="handleCancelReplyComment"
-                                          class="font-weight-bold text-indigo-500 cursor-pointer">
+                                    <span @click="handleCancelReplyComment" class="font-weight-bold text-indigo-500 cursor-pointer">
                                         Cancel
                                     </span>
                                 </div>
