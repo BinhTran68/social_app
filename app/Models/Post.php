@@ -69,6 +69,11 @@ class Post extends Model
         return $this->comments()->count();
     }
 
+    public function countParentComments(): int
+    {
+        return $this->comments()->whereNull('parent_id')->count();
+    }
+
     public function latest5Comment()
     {
         return $this->hasMany(Comment::class)->latest()->whereNull('parent_id')->limit(5)->get();

@@ -38,8 +38,5 @@ class CommentReactionAction
             'num_of_reaction_comments' => $reactions,
             'current_user_has_reaction_comments' => $hasReactionComment
         ]);
-
-
-
     }
 }

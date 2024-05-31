@@ -36,6 +36,7 @@ class PostResource extends JsonResource
             'group' => $this->resource->group(),
             'attachments' =>  PostAttachmentResource::collection($this->resource->attachments),
             'num_of_comments' => $this->resource->countComments(),
+            'num_of_parent_comments' => $this->resource->countParentComments(),
             'num_of_reactions' => $this->resource->countReactions(),
             'current_user_has_reaction' => $this->resource->hasReactionFromUser($userId),
             'comments' => CommentResource::collection($this->resource->latest5Comment()->reverse()),

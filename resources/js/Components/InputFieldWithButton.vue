@@ -56,7 +56,7 @@ const handleOnSubmit = () => {
 </script>
 
 <template>
-    <form @submit.prevent="handleOnSubmit" class="flex items-center gap-2 justify-start">
+    <form @submit.prevent="handleOnSubmit" class="flex items-center gap-2 w-100 justify-start">
         <button v-if="tagToUser" type="submit"
                 :class="['text-indigo font-weight-bold text-no-wrap']">
             {{ tagToUser.name }}
