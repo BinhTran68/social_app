@@ -12,6 +12,11 @@ Route::get('/', [HomeController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('home');
 
+Route::get('/shows', [HomeController::class, 'shows'])
+    ->middleware(['auth', 'verified'])
+    ->name('home.shows');
+
+
 Route::get('/u/{user:username}', [ProfileController::class, 'index'])
     ->name('profile');
 
@@ -20,6 +25,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::post('/profile/update-images', [ProfileController::class, 'updateImages'])
         ->name('profile.update-cover');

@@ -13,14 +13,27 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
-        $userId = Auth::id();
-
         $posts = Post::query()
             ->withCount('reactions')
             ->latest()
-            ->paginate(20);
-        return Inertia::render('client/Home/Home', [
-            'posts' => PostResource::collection($posts)
+            ->paginate(5);
+
+        $posts = PostResource::collection($posts);
+        if ($request->wantsJson()) {
+            return  $posts;
+        }
+        return Inertia::render( 'client/Home/Home', [
+            'posts' => $posts
         ]);
     }
+
+    public function shows(Request $request)
+    {
+        $posts = Post::query()
+            ->withCount('reactions')
+            ->latest()
+            ->paginate(5);
+        return response($posts, 200);
+    }
+
 }
