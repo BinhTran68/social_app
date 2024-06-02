@@ -168,22 +168,10 @@ const authUser = usePage().props.auth.user
                     <slot name="header"/>
                 </div>
             </header>
+            <main class="mt-[64px]">
+                <slot/>
+            </main>
 
-            <div class="grid md:grid-cols-12 gap-3 relative py-5 mt-[64px] ">
-                <div class="md:col-span-4">
-                    <div class="fixed hidden lg:block bg-white rounded-lg">
-                        <GroupMain/>
-                    </div>
-                </div>
-                <div class="md:col-span-4 md:order-3 px-5  flex-1 ">
-                    <FollowingList/>
-                </div>
-                <div class="md:col-span-4 md:order-2 flex flex-col gap-3 overflow-hidden ">
-                    <main class="">
-                        <slot/>
-                    </main>
-                </div>
-            </div>
 
         </div>
     </div>

@@ -29,7 +29,8 @@ const form = useForm({
 
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'created'])
+
 const show = computed({
     get: () => props.modelValue,
     set: (value) => emit('update:modelValue', value)
@@ -40,14 +41,16 @@ function closeModal() {
     show.value = false
 }
 
-
 const handleOnSubmit =  () => {
     axios.post(route('group.create'), form)
         .then(res => {
             toast.success('Create Group successfully')
             closeModal()
+            emit('created', res.data)
         })
-        .catch()
+        .catch(e => {
+            console.log(e)
+        })
 }
 
 

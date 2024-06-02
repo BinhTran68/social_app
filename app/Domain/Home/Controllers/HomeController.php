@@ -2,8 +2,10 @@
 
 namespace App\Domain\Home\Controllers;
 
+use App\Domain\Group\Enum\GroupUserStatus;
 use App\Domain\Post\Resources\PostResource;
 use App\Http\Controllers\Controller;
+use App\Models\Group;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,8 +24,17 @@ class HomeController extends Controller
         if ($request->wantsJson()) {
             return  $posts;
         }
+
+        $groups = Group::query()
+            ->select('groups.*','gu.role')
+            ->join('group_users as gu', 'gu.group_id', 'groups.id')
+            ->where('gu.user_id', Auth::id())
+            ->where('status', GroupUserStatus::APPROVED->value)
+            ->get();
+
         return Inertia::render( 'client/Home/Home', [
-            'posts' => $posts
+            'posts' => $posts,
+            'groups' => $groups
         ]);
     }
 

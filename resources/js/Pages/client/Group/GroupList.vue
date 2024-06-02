@@ -4,12 +4,11 @@ import {ref} from "vue";
 import GroupItem from "@/Pages/client/Group/GroupItem.vue";
 
 
-
-
-const searchKeyword = ref('');
+defineProps({
+    groups: Array
+})
 
 </script>
-
 <template>
     <div class="col-span-3  ">
         <div class="py-8">
@@ -17,13 +16,10 @@ const searchKeyword = ref('');
                 You are not joined to any groups
             </div>
             <div v-else>
-                <GroupItem image="https://picsum.photos/100"
-                           title="Laravel develop"
-                           description="@123 Tôi là trần bninhf kfkfkfkkfkfkffffffffffffffffffffff"
-                />
-                <GroupItem image="https://picsum.photos/100"
-                           title="VuejS develop"
-                           description="@123"
+                <GroupItem v-for="group in groups"
+                           :image="group.thumbnail_path"
+                           :title="group.name"
+                           :description="group.about"
                 />
             </div>
         </div>

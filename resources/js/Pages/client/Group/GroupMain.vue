@@ -1,6 +1,5 @@
 <script setup>
 import { defineAsyncComponent, ref } from "vue";
-
 const GroupList = defineAsyncComponent(() => import("@/Pages/client/Group/GroupList.vue"));
 const TextInput = defineAsyncComponent(() => import("@/Components/TextInput.vue"));
 const Button = defineAsyncComponent(() => import("@/Components/Button.vue"));
@@ -8,12 +7,20 @@ const SettingIcon = defineAsyncComponent(() => import("@/Icon/SettingIcon.vue"))
 const PlusIcon = defineAsyncComponent(() => import("@/Icon/PlusIcon.vue"));
 const GroupModal = defineAsyncComponent(() => import("@/Pages/client/Group/GroupModal.vue"));
 
+const props = defineProps({
+    groups: Array
+})
+
 const showCreateGroups = ref(false);
 const searchGroups = ref('');
+const handleGroupCreatedGroups = (data) => {
+    props.groups.push(data)
+}
+
 </script>
 
 <template>
-    <div class="py-3 px-3" >
+    <div class="py-3 px-3 min-w-full w-full" >
         <div class="flex items-center justify-between">
             <h2 class="mb-2 text-2xl font-bold px-4">Groups</h2>
             <span class="">
@@ -43,9 +50,12 @@ const searchGroups = ref('');
         <div class="px-1 ">
             <TextInput class="bg-gray-50 w-full py-0" :model-value="searchGroups" placeholder="Type to search"/>
         </div>
-        <GroupList/>
+        <GroupList :groups="groups" />
     </div>
-    <GroupModal v-if="showCreateGroups" v-model="showCreateGroups" />
+    <GroupModal
+        @created="handleGroupCreatedGroups"
+        v-if="showCreateGroups"
+        v-model="showCreateGroups" />
 </template>
 
 <style scoped>
