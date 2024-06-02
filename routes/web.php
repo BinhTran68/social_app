@@ -56,6 +56,10 @@ Route::middleware('auth')->group(function () {
         ->name('post.comment.reaction');
 
     // Groups
+    Route::get('/group/{group:slug}', [GroupController::class, 'show'])
+        ->name('group.show');
+    Route::get('/groups', [GroupController::class, 'index'])
+        ->name('group.index');
     Route::post('/groups', [GroupController::class, 'store'])
         ->name('group.create');
 

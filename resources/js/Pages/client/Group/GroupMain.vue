@@ -57,6 +57,5 @@ const handleGroupCreatedGroups = (data) => {
         v-if="showCreateGroups"
         v-model="showCreateGroups" />
 </template>
-
 <style scoped>
 </style>

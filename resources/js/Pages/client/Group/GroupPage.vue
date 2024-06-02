@@ -4,7 +4,6 @@ import CreatePost from "@/Pages/client/Post/CreatePost.vue";
 import PostsList from "@/Pages/client/Post/PostsList.vue";
 import {ref} from "vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import FollowingList from "@/Pages/client/Home/components/FollowingList.vue";
 import GroupMain from "@/Pages/client/Group/GroupMain.vue";
 
 const drawer = ref(true)
@@ -25,22 +24,16 @@ function handleImageError() {
 </script>
 
 <template>
-    <Head title="Socical Media Website"/>
+    <Head title="Zalo Groups"/>
     <AuthenticatedLayout>
         <div class="grid lg:grid-cols-12  gap-3 relative py-5  ">
             <div class="lg:col-span-4 md:order-1">
-                <div class="fixed hidden lg:block max-w-96  bg-white rounded-lg flex-1">
+                <div class="fixed hidden lg:block min-w-96  bg-white rounded-lg flex-1">
                     <GroupMain :groups="groups" />
                 </div>
             </div>
-            <div class="lg:col-span-4 md:order-3">
-                <div class="fixed hidden lg:block right-1 max-w-96 bg-white rounded-lg flex-1">
-                    <GroupMain :groups="groups" />
-                </div>
-            </div>
-            <div class="lg:col-span-4 md:order-2 flex flex-col w-full gap-3 overflow-hidden ">
+            <div class="lg:col-span-8 px-15 md:order-2 flex flex-col w-full gap-3 overflow-hidden ">
                 <CreatePost/>
-                <PostsList :posts="posts.data"/>
             </div>
         </div>
     </AuthenticatedLayout>

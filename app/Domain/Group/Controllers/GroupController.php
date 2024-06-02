@@ -3,11 +3,13 @@
 namespace App\Domain\Group\Controllers;
 
 use App\Domain\Group\Actions\StoreGroupAction;
+use App\Domain\Group\Enum\GroupUserStatus;
 use App\Domain\Group\Requests\StoreGroupRequest;
 use App\Domain\Group\Requests\UpdateGroupRequest;
 use App\Http\Controllers\Controller;
 use App\Models\Group;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class GroupController extends Controller
 {
@@ -16,7 +18,16 @@ class GroupController extends Controller
      */
     public function index()
     {
-        //
+        $groups = Group::query()
+            ->select('groups.*','gu.role')
+            ->join('group_users as gu', 'gu.group_id', 'groups.id')
+            ->where('gu.user_id', Auth::id())
+            ->where('status', GroupUserStatus::APPROVED->value)
+            ->get();
+
+        return Inertia::render( 'client/Group/GroupPage', [
+            'groups' => $groups
+        ]);
     }
 
     /**
@@ -32,7 +43,9 @@ class GroupController extends Controller
      */
     public function show(Group $group)
     {
-        //
+        return Inertia::render( 'client/Group/GroupView', [
+            'group' => $group
+        ]);
     }
 
     /**

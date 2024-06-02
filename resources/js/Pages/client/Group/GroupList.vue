@@ -20,6 +20,7 @@ defineProps({
                            :image="group.thumbnail_path"
                            :title="group.name"
                            :description="group.about"
+                           :slug="group.slug"
                 />
             </div>
         </div>
