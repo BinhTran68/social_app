@@ -6,22 +6,20 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import {Link, usePage} from '@inertiajs/vue3';
-import PostsList from "@/Pages/client/Post/PostsList.vue";
 import FollowingList from "@/Pages/client/Home/components/FollowingList.vue";
-import CreatePost from "@/Pages/client/Post/CreatePost.vue";
+import GroupMain from "@/Pages/client/Group/GroupMain.vue";
 
 
 const showingNavigationDropdown = ref(false);
-
 const authUser = usePage().props.auth.user
-
 
 </script>
 
 <template>
     <div class="">
         <div class="min-h-screen bg-indigo-50 dark:bg-gray-900 z-50">
-            <nav class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 fixed w-full top-0 right-0 left-0 z-50">
+            <nav
+                class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 fixed w-full top-0 right-0 left-0 z-50">
                 <!-- Primary Navigation Menu -->
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between h-16">
@@ -40,6 +38,12 @@ const authUser = usePage().props.auth.user
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                     Dashboard
                                 </NavLink>
+                                <a  class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-700 focus:outline-none focus:text-gray-700 dark:focus:text-gray-300 focus:border-gray-300 dark:focus:border-gray-700 transition duration-150 ease-in-out" href="https://id.zalo.me/account?continue=https%3A%2F%2Fchat.zalo.me%2F">
+                                    Message
+                                </a>
+                                <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                                    Group
+                                </NavLink>
                             </div>
                         </div>
 
@@ -50,7 +54,6 @@ const authUser = usePage().props.auth.user
                                     <template #trigger>
                                         <span class="inline-flex rounded-md">
                                             <button
-
                                                 type="button"
                                                 class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150"
                                                 v-if="authUser"
@@ -82,7 +85,6 @@ const authUser = usePage().props.auth.user
                                         </DropdownLink>
                                         <DropdownLink
                                             v-if="!authUser"
-
                                         >
                                             login button
                                         </DropdownLink>
@@ -151,7 +153,7 @@ const authUser = usePage().props.auth.user
                         </div>
 
                         <div class="mt-3 space-y-1">
-                            <ResponsiveNavLink :href="route('profile.edit')"> Profile </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('profile.edit')"> Profile</ResponsiveNavLink>
                             <ResponsiveNavLink :href="route('logout')" method="post" as="button">
                                 Log Out
                             </ResponsiveNavLink>
@@ -163,23 +165,22 @@ const authUser = usePage().props.auth.user
             <!-- Page Heading -->
             <header class="bg-white dark:bg-gray-800 shadow" v-if="$slots.header">
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    <slot name="header" />
+                    <slot name="header"/>
                 </div>
             </header>
 
-            <div class="grid lg:grid-cols-12 gap-3 relative py-5 mt-[64px] " >
-                <div class="lg:col-span-4">
-                    <div class="fixed lg:block sm:hidden">
-                        <FollowingList/>
+            <div class="grid md:grid-cols-12 gap-3 relative py-5 mt-[64px] ">
+                <div class="md:col-span-4">
+                    <div class="fixed hidden lg:block bg-white rounded-lg">
+                        <GroupMain/>
                     </div>
-
                 </div>
-                <div class="lg:col-span-4 md:order-3 px-5  flex-1 ">
+                <div class="md:col-span-4 md:order-3 px-5  flex-1 ">
                     <FollowingList/>
                 </div>
-                <div class="lg:col-span-4 md:order-2 flex flex-col gap-3 overflow-hidden ">
+                <div class="md:col-span-4 md:order-2 flex flex-col gap-3 overflow-hidden ">
                     <main class="">
-                        <slot />
+                        <slot/>
                     </main>
                 </div>
             </div>

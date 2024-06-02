@@ -1,5 +1,6 @@
 <?php
 
+use App\Domain\Group\Controllers\GroupController;
 use App\Domain\Home\Controllers\HomeController;
 use App\Domain\Post\Controllers\PostCommentController;
 use App\Domain\Post\Controllers\PostController;
@@ -51,9 +52,12 @@ Route::middleware('auth')->group(function () {
         ->name('post.comment.destroy');
 
     // Reaction comment
-    Route::post('/posts/comments/{comment}/reaction', [PostCommentController::class, 'reaction'])
-        ->name('post.comment_reaction');
+    Route::put('/posts/comments/{comment}/reaction', [PostCommentController::class, 'reaction'])
+        ->name('post.comment.reaction');
 
+    // Groups
+    Route::post('/groups', [GroupController::class, 'store'])
+        ->name('group.create');
 
 
 });

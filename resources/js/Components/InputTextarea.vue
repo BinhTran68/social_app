@@ -2,27 +2,30 @@
 import { ref, watch, onMounted } from "vue";
 
 const props = defineProps({
-    modelValue: String
+    modelValue: String,
 });
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(["update:modelValue"]);
 const input = ref(props.modelValue);
 const textareaRef = ref(null);
 
-watch(() => props.modelValue, (newVal) => {
-    input.value = newVal;
-});
+watch(
+    () => props.modelValue,
+    (newVal) => {
+        input.value = newVal;
+    }
+);
 
 const adjustHeight = () => {
     if (textareaRef.value) {
         textareaRef.value.style.height = "auto";
-        textareaRef.value.style.height = textareaRef.value.scrollHeight + 'px';
+        textareaRef.value.style.height = textareaRef.value.scrollHeight + "px";
     }
 };
 
 const onInputChange = (e) => {
     input.value = e.target.value;
-    emit('update:modelValue', input.value);
+    emit("update:modelValue", input.value);
     adjustHeight();
 };
 
@@ -30,7 +33,6 @@ const onInputChange = (e) => {
 onMounted(() => {
     adjustHeight();
 });
-
 </script>
 
 <template>

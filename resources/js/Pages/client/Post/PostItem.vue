@@ -144,9 +144,10 @@ const handleCancelEditComment = () => {
 const handleReactionComment = async (id, parentId) => {
     toggleCommentReactionState(id, parentId);
     try {
-        const response = await axios.post(route('post.comment_reaction', id), { reaction: 'like' });
+        const response = await axios.put(route('post.comment.reaction', id), { reaction: 'like' });
         updateCommentReactionCount(id, parentId, response.data.num_of_reaction_comments);
     } catch (error) {
+        console.log(error)
         toggleCommentReactionState(id, parentId); // Revert state on failure
     }
 };
@@ -194,10 +195,12 @@ const mergeAndSortComments = (existingComments, newComments) => {
 };
 
 const toggleCommentReactionState = (id, parentId) => {
+    console.log(id, parentId)
     let comment;
     if (parentId) {
         const parentComment = props.post.comments.find(cmt => cmt.id === parentId);
         comment = parentComment.sub_comments.find(subCmt => subCmt.id === id);
+        console.log(comment);
     } else {
         comment = props.post.comments.find(cmt => cmt.id === id);
     }
@@ -209,7 +212,8 @@ const updateCommentReactionCount = (id, parentId, newCount) => {
     if (parentId) {
         props.post.comments = props.post.comments.map(comment => {
             if (comment.id === parentId) {
-                comment.sub_comments = comment.sub_comments.map(subCmt => (subCmt.id === id ? { ...subCmt, num_of_reaction_comments: newCount } : subCmt));
+                comment.sub_comments = comment.sub_comments.map(subCmt =>
+                    (subCmt.id === id ? { ...subCmt, num_of_reaction_comments: newCount } : subCmt));
             }
             return comment;
         });

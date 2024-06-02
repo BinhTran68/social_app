@@ -10,6 +10,9 @@ const props = defineProps({
     active: {
         type: Boolean,
     },
+    target : {
+        default: '_self'
+    }
 });
 
 const classes = computed(() =>
@@ -20,7 +23,7 @@ const classes = computed(() =>
 </script>
 
 <template>
-    <Link :href="href" :class="classes">
+    <Link :href="href" :class="classes" :target="target">
         <slot />
     </Link>
 </template>

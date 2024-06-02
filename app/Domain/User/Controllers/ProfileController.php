@@ -2,7 +2,7 @@
 
 namespace App\Domain\User\Controllers;
 
-use App\Domain\User\Action\UpdateImages;
+use App\Domain\User\Actions\UpdateImages;
 use App\Domain\User\Requests\ProfileUpdateRequest;
 use App\Domain\User\Requests\UploadImageProfileRequest;
 use App\Domain\User\Resources\UserResource;

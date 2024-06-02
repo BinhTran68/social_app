@@ -37,6 +37,7 @@ createInertiaApp({
             .use(vuetify)  // vuetify UI
             .use(Vue3Toasity, {
                 autoClose: 3000,
+                position: "bottom-right",
             })
             .mount(el);
     },

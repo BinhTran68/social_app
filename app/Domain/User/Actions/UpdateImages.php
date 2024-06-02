@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain\User\Action;
+namespace App\Domain\User\Actions;
 
 use App\Domain\User\Requests\UploadImageProfileRequest;
 use App\Models\User;
