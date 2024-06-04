@@ -12,7 +12,7 @@ const rail = ref(true)
 
 defineProps({
     posts :  Object,
-    groups : Array
+    groups : Object
 });
 
 
@@ -30,12 +30,12 @@ function handleImageError() {
         <div class="grid lg:grid-cols-12  gap-3 relative py-5  ">
             <div class="lg:col-span-4 md:order-1">
                 <div class="fixed hidden lg:block max-w-96  bg-white rounded-lg flex-1">
-                    <GroupMain :groups="groups" />
+                    <GroupMain :groups="groups.data" />
                 </div>
             </div>
             <div class="lg:col-span-4 md:order-3">
                 <div class="fixed hidden lg:block right-1 max-w-96 bg-white rounded-lg flex-1">
-                    <GroupMain :groups="groups" />
+                    <GroupMain :groups="groups.data" />
                 </div>
             </div>
             <div class="lg:col-span-4 md:order-2 flex flex-col w-full gap-3 overflow-hidden ">

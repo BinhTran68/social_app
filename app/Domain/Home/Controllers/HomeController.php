@@ -3,6 +3,7 @@
 namespace App\Domain\Home\Controllers;
 
 use App\Domain\Group\Enum\GroupUserStatus;
+use App\Domain\Group\Resources\GroupResource;
 use App\Domain\Post\Resources\PostResource;
 use App\Http\Controllers\Controller;
 use App\Models\Group;
@@ -31,7 +32,7 @@ class HomeController extends Controller
             ->where('gu.user_id', Auth::id())
             ->where('status', GroupUserStatus::APPROVED->value)
             ->get();
-
+        $groups = GroupResource::collection($groups);
         return Inertia::render( 'client/Home/Home', [
             'posts' => $posts,
             'groups' => $groups

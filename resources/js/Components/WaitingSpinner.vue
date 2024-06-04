@@ -2,7 +2,7 @@
     <div class="overlay">
         <div class="spinner-container">
             <v-progress-circular
-                color="red"
+                color="#0068FF"
                 indeterminate
             ></v-progress-circular>
         </div>

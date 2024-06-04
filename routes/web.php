@@ -1,6 +1,7 @@
 <?php
 
 use App\Domain\Group\Controllers\GroupController;
+use App\Domain\Group\Controllers\GroupViewController;
 use App\Domain\Home\Controllers\HomeController;
 use App\Domain\Post\Controllers\PostCommentController;
 use App\Domain\Post\Controllers\PostController;
@@ -62,6 +63,9 @@ Route::middleware('auth')->group(function () {
         ->name('group.index');
     Route::post('/groups', [GroupController::class, 'store'])
         ->name('group.create');
+
+    Route::post('/groups/{group}/image', [GroupViewController::class, 'updateImages'])
+        ->name('group.update_image');
 
 
 });

@@ -1,7 +1,7 @@
 <script setup>
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue';
 import { computed, ref } from 'vue';
-import { usePage } from "@inertiajs/vue3";
+import {router, usePage} from "@inertiajs/vue3";
 import Button from "@/Components/Button.vue";
 import { BASE_URL, CLOUDINARY_UPLOAD_PRESET } from "@/Utils/Constant.js"
 import CancelIcon from "@/Icon/CancelIcon.vue";
@@ -26,60 +26,53 @@ const props = defineProps({
         type: Object
     }
 })
-
+const group = ref(props.group.data);
 const authUser = usePage().props.auth.group
-const group = ref(props.group);
+
+
 const isLoading = ref(false);
-
 const isMyProfile = computed(() => (authUser && authUser.id === props.group.id))
+
 const coverImageSrc = ref('');
-let coverImageFile = null;
+let coverImageFile = null
 
-const onCoverChange = (event) => {
-    coverImageFile = event.target.files[0]
-    if (coverImageFile) {
-        const reader = new FileReader()
-        reader.onload = () => {
-            coverImageSrc.value = reader.result
-        }
-        reader.readAsDataURL(coverImageFile)
-    }
-}
+const avatarImageSrc = ref('');
+let avatarImageFile = null;
 
-const clearCoverImage = () => {
-    coverImageFile = null
-    coverImageSrc.value = ''
-}
+
 
 const handleSubmitCoverImage = async () => {
     isLoading.value = true
     const formData = new FormData();
     formData.append('file', coverImageFile)
-    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET)
-    const url = await uploadFileToCloud(formData, 'cover_images');
-    if (url === null) {
-        toast.error("Something went wrong went ")
-        isLoading.value = false
-        return
-    }
-    const data = {
-        url: url,
-        type: 'cover'
-    }
-    axios.post(`${BASE_URL}/profile/update-images`, data).then(({data}) => {
-        group.value = data
-        clearCoverImage()
-        isLoading.value = false
-        toast.success('Upload cover images successfully.');
-    }).catch((e) => {
-        clearCoverImage()
-        isLoading.value = false
-        showErrorToast(e)
-    })
+    formData.append('type', 'cover')
+    fetchApiSaveImages(formData)
 }
 
-const avatarImageSrc = ref('');
-let avatarImageFile = null;
+const handleSubmitChangeAvatar = async () => {
+    isLoading.value = true
+    const formData = new FormData();
+    formData.append('file', avatarImageFile)
+    formData.append('type', 'avatar')
+    fetchApiSaveImages(formData);
+}
+
+const fetchApiSaveImages = (formData) => {
+    axios.post(route('group.update_image', group.value.id), formData).then((res) => {
+        if (formData.get('type') === 'cover') {
+            group.value.cover_path = res.data.cover_path
+        }else {
+            group.value.thumbnail_path = res.data.thumbnail_path
+        }
+        toast.success('Upload cover images successfully.');
+    }).catch((e) => {
+        showErrorToast(e)
+    }).finally(() => {
+        isLoading.value = false
+        clearCoverImage()
+        clearAvatarImage()
+    })
+}
 
 const onAvatarChange = (event) => {
     avatarImageFile = event.target.files[0]
@@ -97,33 +90,26 @@ const clearAvatarImage = () => {
     avatarImageSrc.value = ''
 }
 
-const handleSubmitChangeAvatar = async () => {
-    isLoading.value = true
-    const formData = new FormData();
-    formData.append('file', avatarImageFile)
-    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET)
-    const url = await uploadFileToCloud(formData, 'avatar-images');
-    if (url === null) {
-        toast.error("Something went wrong !")
-        clearAvatarImage()
-        isLoading.value = false
-        return
+const onCoverChange = (event) => {
+    coverImageFile = event.target.files[0]
+    if (coverImageFile) {
+        const reader = new FileReader()
+        reader.onload = () => {
+            coverImageSrc.value = reader.result
+        }
+        reader.readAsDataURL(coverImageFile)
     }
-    const data = {
-        url: url,
-        type: 'avatar'
-    }
-    axios.post(`${BASE_URL}/profile/update-images`, data).then(({data}) => {
-        group.value = data
-        clearAvatarImage()
-        isLoading.value = false
-        toast.success('Upload cover images successfully.');
-    }).catch((e) => {
-        clearAvatarImage()
-        isLoading.value = false
-        showErrorToast(e)
-    })
 }
+
+const clearCoverImage = () => {
+    coverImageFile = null
+    coverImageSrc.value = ''
+}
+
+const showErrorToast = (error) => {
+    toast.error(error.response?.data?.message || 'Something went wrong!');
+};
+
 </script>
 
 <template>
@@ -134,7 +120,7 @@ const handleSubmitChangeAvatar = async () => {
         <div class="container max-w-[928px] h-full mx-auto ">
             <div class="relative bg-white">
                 <img
-                    :src="coverImageSrc || group.cover_url || '/img/default_cover_image.jpg'"
+                    :src="coverImageSrc || group.cover_path || '/img/default_cover_image.jpg'"
                     alt="cover photo"
                     class="object-cover  w-full h-[350px] "
                 >

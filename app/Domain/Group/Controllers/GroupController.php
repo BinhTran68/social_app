@@ -6,6 +6,7 @@ use App\Domain\Group\Actions\StoreGroupAction;
 use App\Domain\Group\Enum\GroupUserStatus;
 use App\Domain\Group\Requests\StoreGroupRequest;
 use App\Domain\Group\Requests\UpdateGroupRequest;
+use App\Domain\Group\Resources\GroupResource;
 use App\Http\Controllers\Controller;
 use App\Models\Group;
 use Illuminate\Support\Facades\Auth;
@@ -44,7 +45,7 @@ class GroupController extends Controller
     public function show(Group $group)
     {
         return Inertia::render( 'client/Group/GroupView', [
-            'group' => $group
+            'group' => GroupResource::make($group)
         ]);
     }
 
