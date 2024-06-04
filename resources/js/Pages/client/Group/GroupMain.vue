@@ -5,7 +5,7 @@ const TextInput = defineAsyncComponent(() => import("@/Components/TextInput.vue"
 const Button = defineAsyncComponent(() => import("@/Components/Button.vue"));
 const SettingIcon = defineAsyncComponent(() => import("@/Icon/SettingIcon.vue"));
 const PlusIcon = defineAsyncComponent(() => import("@/Icon/PlusIcon.vue"));
-const GroupModal = defineAsyncComponent(() => import("@/Pages/client/Group/GroupModal.vue"));
+const GroupModal = defineAsyncComponent(() => import("@/Pages/client/Group/Modal/GroupModal.vue"));
 
 const props = defineProps({
     groups: Array

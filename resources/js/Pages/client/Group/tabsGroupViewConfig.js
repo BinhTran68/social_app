@@ -23,6 +23,7 @@ export const tabs = [
         key: 'photos',
         label: 'Photos',
         url: '@/Pages/Profile/Tabs/PhotosTab.vue',
+        role: 'isAdmin',
         component: defineAsyncComponent(() =>  import('@/Pages/client/Group/Tabs/PhotosTab.vue'))
     },
 ];

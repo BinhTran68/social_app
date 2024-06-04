@@ -1,44 +1,40 @@
 <script setup>
-import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue';
-import { computed, ref } from 'vue';
+import {TabGroup, TabList, Tab, TabPanels, TabPanel} from '@headlessui/vue';
+import {computed, defineAsyncComponent, ref} from 'vue';
 import {router, usePage} from "@inertiajs/vue3";
 import Button from "@/Components/Button.vue";
-import { BASE_URL, CLOUDINARY_UPLOAD_PRESET } from "@/Utils/Constant.js"
+import {BASE_URL, CLOUDINARY_UPLOAD_PRESET} from "@/Utils/Constant.js"
 import CancelIcon from "@/Icon/CancelIcon.vue";
 import CameraIcon from "@/Icon/CameraIcon.vue";
 import CheckIcon from "@/Icon/CheckIcon.vue";
 import axios from 'axios';
 import WaitingSpinner from "@/Components/WaitingSpinner.vue";
-import { toast } from "vue3-toastify";
+import {toast} from "vue3-toastify";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
 import TabItem from "@/Pages/Profile/Partials/TabItem.vue";
 import {tabs} from "@/Pages/client/Group/tabsGroupViewConfig.js";
+import PlusIcon from "@/Icon/PlusIcon.vue";
+const InviteGroupModal = defineAsyncComponent(() =>  import("@/Pages/client/Group/Modal/InviteGroupModal.vue"));
 
 const props = defineProps({
-    mustVerifyEmail: {
-        type: Boolean
-    },
-    status: {
-        type: Boolean
-    },
     group: {
         type: Object
     }
 })
 const group = ref(props.group.data);
-const authUser = usePage().props.auth.group
+const authUser = usePage().props.auth.user
 
 
 const isLoading = ref(false);
-const isMyProfile = computed(() => (authUser && authUser.id === props.group.id))
+const isMyGroup = computed(() => (authUser && authUser.id === group.value.user_id))
+const showInviteToGroups = ref(false)
 
 const coverImageSrc = ref('');
 let coverImageFile = null
 
 const avatarImageSrc = ref('');
 let avatarImageFile = null;
-
 
 
 const handleSubmitCoverImage = async () => {
@@ -61,7 +57,7 @@ const fetchApiSaveImages = (formData) => {
     axios.post(route('group.update_image', group.value.id), formData).then((res) => {
         if (formData.get('type') === 'cover') {
             group.value.cover_path = res.data.cover_path
-        }else {
+        } else {
             group.value.thumbnail_path = res.data.thumbnail_path
         }
         toast.success('Upload cover images successfully.');
@@ -112,6 +108,16 @@ const showErrorToast = (error) => {
 
 </script>
 
+<!--
+Open Modal Invite friend to tis group
+
+1. Select my flowed
+2. find by user-name
+3. Send mail join in to group
+
+
+-->
+
 <template>
     <AuthenticatedLayout>
         <div v-if="isLoading">
@@ -124,7 +130,7 @@ const showErrorToast = (error) => {
                     alt="cover photo"
                     class="object-cover  w-full h-[350px] "
                 >
-                <label v-if="!coverImageSrc" for="cover-image" class="
+                <label v-if="isMyGroup && !coverImageSrc" for="cover-image" class="
                 absolute top-72 right-2 bg-gray-50 px-2 py-1
                 rounded-md opacity-90 hover:bg-gray-200 cursor-pointer">
                    <span class="flex items-center justify-center gap-3">
@@ -202,7 +208,7 @@ const showErrorToast = (error) => {
 
                     </div>
                     <label
-                        v-if="!avatarImageSrc"
+                        v-if="isMyGroup && !avatarImageSrc"
                         for="avatar-image"
                         class="top-12 left-48
                          absolute border-[2px] flex
@@ -249,10 +255,30 @@ const showErrorToast = (error) => {
                             ml-[48px]
                             opacity-30">
                     </div>
-                    <div class="flex justify-between items-center p-3">
-                        <h1 class="font-bold text-lg">
-                            {{ group.name }}
-                        </h1>
+                    <div class="flex justify-between items-center gap-8 p-3">
+                       <div>
+                           <small class="font-semibold">Public group <small>500k members</small></small>
+                           <h1 class="font-bold text-lg">
+                               {{ group.name }}
+                           </h1>
+                       </div>
+
+                        <div>
+                            <div>
+                                <Button class="flex">
+                                    <span
+                                        class="flex items-center gap-1"
+                                        @click="showInviteToGroups = true"
+                                    >
+                                         <PlusIcon :class="['w-4 h-4']"/>
+                                           <span>
+                                            Invite
+                                         </span>
+                                    </span>
+
+                                </Button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -261,7 +287,7 @@ const showErrorToast = (error) => {
                 <TabGroup>
                     <TabList class="flex bg-white">
                         <template v-for="tab in tabs" :key="tab.key">
-                            <Tab as="template"  v-slot="{ selected }">
+                            <Tab as="template" v-slot="{ selected }">
                                 <TabItem :selected="selected" :text="tab.label"/>
                             </Tab>
                         </template>
@@ -269,12 +295,15 @@ const showErrorToast = (error) => {
                     <TabPanels class="mt-2">
                         <template v-for="tab in tabs" :key="tab.key">
                             <TabPanel>
-                                <component :is="tab.component" />
+                                <component :is="tab.component"/>
                             </TabPanel>
                         </template>
                     </TabPanels>
                 </TabGroup>
             </div>
         </div>
+        <InviteGroupModal
+            v-if="showInviteToGroups"
+            v-model="showInviteToGroups" />
     </AuthenticatedLayout>
 </template>
