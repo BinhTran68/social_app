@@ -4,14 +4,11 @@ import {Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot,} from
 import XmarkIcon from "@/Icon/XmarkIcon.vue";
 import {useForm} from "@inertiajs/vue3";
 import Button from "@/Components/Button.vue";
-import InputLabel from "@/Components/InputLabel.vue";
-import InputTextarea from "@/Components/InputTextarea.vue";
-import Select from "@/Icon/Select.vue";
 import Checkbox from "@/Components/Checkbox.vue";
 import {toast} from "vue3-toastify";
-import TextInput from "@/Components/TextInput.vue";
 import CircleImage from "@/Components/CircleImage.vue";
 import InputFieldWithButton from "@/Components/InputFieldWithButton.vue";
+import {id} from "vuetify/locale";
 
 
 const props = defineProps({
@@ -24,16 +21,14 @@ const props = defineProps({
         default: false
     }
 })
-const form = useForm({
-    name: '',
-    about : '',
-    auto_approval : true,
-    privacy : 'public'
 
-})
+
+const searchValue = ref('');
+const isProcessing = ref(false);
+const usersRef = ref([])
+const userInvitesRef = ref([]);
 
 const emit = defineEmits(['update:modelValue', 'created'])
-
 const show = computed({
     get: () => props.modelValue,
     set: (value) => emit('update:modelValue', value)
@@ -44,23 +39,41 @@ function closeModal() {
     show.value = false
 }
 
-const handleOnSubmit =  () => {
-    axios.post(route('group.create'), form)
+const handleOnSubmit = ({ content }) => {
+
+    axios.get(route('user.find_keyword', [{keyword: content, page: null}]))
         .then(res => {
-            toast.success('Create Group successfully')
-            closeModal()
-            emit('created', res.data)
+            const  data = res.data
+            usersRef.value = data
         })
         .catch(e => {
-            console.log(e)
+
         })
 }
 
+const handleOnSendInvites = () => {
+    // Call api send invites
+}
+
+const handleOnChecked = (user) => {
+    const userPrev = userInvitesRef.value.find((u) => u.id === user.id);
+    if (userPrev) {
+        userInvitesRef.value = userInvitesRef.value.filter((u) => u.id !== user.id )
+    }else {
+        userInvitesRef.value.push(user);
+    }
+}
+
+const handleOnRemoveInvite = (id) => {
+    userInvitesRef.value = userInvitesRef.value.filter((u) => u.id !== id )
+}
 
 const options = ref([
     { value: 'private', label: 'Private' },
     { value: 'public', label: 'Public' },
 ]);
+
+
 </script>
 
 <!-- When open modal call api lấy ra danh sách flowed -->
@@ -96,7 +109,7 @@ const options = ref([
                             class="max-w-xl"
                         >
                             <DialogPanel
-                                class="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-white p-4 text-left align-middle shadow-xl transition-all"
+                                class="w-full max-w-4xl transform overflow-hidden rounded-2xl bg-white p-4 text-left align-middle shadow-xl transition-all"
                             >
                                 <DialogTitle
                                     as="h3"
@@ -113,32 +126,51 @@ const options = ref([
                                     </span>
                                     <span
                                         @click="closeModal"
-                                        class="cursor-pointer hover:opacity-50 p-2 bg-gray-300 rounded-full" >
+                                        class="cursor-pointer  hover:opacity-50 p-2 bg-gray-300 rounded-full" >
                                         <XmarkIcon :className="['w-5 ']"/>
                                     </span>
                                 </DialogTitle>
 <!--                               CONTENT  -->
-                                <div class="grid md:grid-cols-12 py-5">
+                                <div class="grid md:grid-cols-12 h-96 py-5">
                                     <div class="md:col-span-8 p-3">
                                         <div>
-                                            <InputFieldWithButton submit-text="Search" />
+                                            <InputFieldWithButton
+                                                :is-processing="isProcessing"
+                                                @onSubmit="handleOnSubmit"
+                                                v-model="searchValue"
+                                                :placeholder="'Search person by name,user-name'" submit-text="Search" />
                                         </div>
-                                        <h5 class="py-2">Suggested</h5>
-                                        <div class="flex items-center justify-between gap-2">
+                                        <h5 class="py-2 font-weight-bold">Suggested</h5>
+                                        <span v-if="usersRef.length <= 0">
+                                            Can't find person for suggested
+                                        </span>
+                                        <div v-for="user in usersRef" class="flex py-2 items-center justify-between gap-2">
                                             <span class="flex items-center gap-3">
-                                                 <CircleImage/>
-                                                An Trâần
+                                                 <CircleImage :src="user.avatar_url"/>
+                                                <span>{{ user.name }}</span>
                                             </span>
-                                            <Checkbox checked=""/>
+                                            <span>
+                                                 <Checkbox
+                                                     @update:checked="handleOnChecked(user)"
+                                                     :checked="userInvitesRef.includes(user)"
+                                                 />
+                                            </span>
+
                                         </div>
                                     </div>
                                     <div class="md:col-span-4 p-3 bg-gray-200 rounded-md" >
                                         <span>0 friends selected</span>
+                                        <div v-for="user in userInvitesRef" class="flex py-2 items-center justify-between gap-2">
+                                            <span class="flex items-center gap-3">
+                                                 <CircleImage :src="user.avatar_url"/>
+                                                <span>{{ user.name }}</span>
+                                            </span>
+                                            <span class="cursor-pointer" @click="handleOnRemoveInvite(user.id)" >
+                                                   <XmarkIcon class-name="w-4"/>
+                                            </span>
+                                        </div>
                                     </div>
-
                                 </div>
-
-
                                 <div class="flex justify-end gap-6">
                                     <Button
                                         @click="closeModal"
@@ -146,7 +178,7 @@ const options = ref([
                                         Cancel
                                     </Button>
                                     <Button
-                                        @click="handleOnSubmit"
+                                        @click="handleOnSendInvites"
                                         :class="['']">
                                         Send invites
                                     </Button>

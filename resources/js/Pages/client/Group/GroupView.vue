@@ -265,17 +265,15 @@ Open Modal Invite friend to tis group
 
                         <div>
                             <div>
-                                <Button class="flex">
-                                    <span
-                                        class="flex items-center gap-1"
+                                <Button class="flex"
                                         @click="showInviteToGroups = true"
-                                    >
+                                >
+                                    <span class="flex items-center gap-1">
                                          <PlusIcon :class="['w-4 h-4']"/>
                                            <span>
                                             Invite
                                          </span>
                                     </span>
-
                                 </Button>
                             </div>
                         </div>

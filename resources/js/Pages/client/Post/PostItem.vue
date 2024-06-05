@@ -40,12 +40,7 @@ const replyComment = ref({
     replyUser: null,
     subCmtId: null
 });
-const replySubComment = ref({
-    parentId: null,
-    subCommentId: null,
-    replyUser: null
-});
-const isLike = ref(false);
+
 const commentEdit = ref({
     id: null,
     comment: ''
@@ -227,6 +222,13 @@ const resetCommentForm = () => {
     replyCommentContent.value = '';
     replyComment.value = { parentId: null, replyUser: null };
 };
+
+// Report
+const handleOnReportThisPost = () => {
+    alert('report')
+}
+
+
 </script>
 <template>
     <div class="bg-white flex flex-col gap-4 py-3 rounded-md">
@@ -252,7 +254,7 @@ const resetCommentForm = () => {
                             class="absolute right-0 mt-2 w-32 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none"
                         >
                             <div class="px-1 py-1">
-                                <MenuItem v-slot="{ active }">
+                                <MenuItem v-if="isMyPost" v-slot="{ active }">
                                     <button
                                         @click="showEditModal = true"
                                         :class="[
@@ -263,7 +265,7 @@ const resetCommentForm = () => {
                                         Edit
                                     </button>
                                 </MenuItem>
-                                <MenuItem v-slot="{ active }">
+                                <MenuItem v-if="isMyPost" v-slot="{ active }">
                                     <button
                                         :class="[
                                  active ? 'bg-indigo-500 text-white' : 'text-red-700',
@@ -272,6 +274,17 @@ const resetCommentForm = () => {
                                         @click="deletePost"
                                     >
                                         Delete
+                                    </button>
+                                </MenuItem>
+                                <MenuItem v-if="!isMyPost" v-slot="{ active }">
+                                    <button
+                                        :class="[
+                                 active ? 'bg-indigo-500 text-white' : 'text-red-700',
+                                'group flex w-full items-center rounded-md px-2 py-2 text-sm ',
+                                    ]"
+                                        @click="handleOnReportThisPost"
+                                    >
+                                        Report
                                     </button>
                                 </MenuItem>
                             </div>
@@ -418,7 +431,7 @@ const resetCommentForm = () => {
                                                     rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none"
                                                 >
                                                     <div class="px-1 py-1">
-                                                        <MenuItem v-slot="{ active }">
+                                                        <MenuItem v-if="cmt.id" v-slot="{ active }">
                                                             <button
                                                                 @click="handleOnEditComment(subCmt.id, subCmt.comment)"
                                                                 :class="[

@@ -7,6 +7,7 @@ use App\Domain\Post\Controllers\PostCommentController;
 use App\Domain\Post\Controllers\PostController;
 use App\Domain\Post\Controllers\PostReactionController;
 use App\Domain\User\Controllers\ProfileController;
+use App\Domain\User\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -33,6 +34,12 @@ Route::middleware('auth')->group(function () {
         ->name('profile.update-cover');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+
+    // User
+    Route::get('/users/find', [UserController::class, 'find'])->name('user.find_keyword');
+
+
 
     Route::post('/posts', [PostController::class, 'store'])->name('post.create');
     // Cannot use put, patch

@@ -10,10 +10,7 @@ const props = defineProps({
         type: Array
     }
 });
-
 const loadMoreIntersectRef = ref(null);
-const currentPageRef = ref(2);
-
 const  allPost = ref({
     data : page.props.posts.data,
     next : page.props.posts.links.next
