@@ -8,6 +8,7 @@ import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import {Link, usePage} from '@inertiajs/vue3';
 import FollowingList from "@/Pages/client/Home/components/FollowingList.vue";
 import GroupMain from "@/Pages/client/Group/GroupMain.vue";
+import UsersIcon from "@/Icon/UsersIcon.vue";
 
 
 const showingNavigationDropdown = ref(false);
@@ -43,6 +44,15 @@ const authUser = usePage().props.auth.user
                                 </a>
                                 <NavLink :href="route('group.index')" :active="route().current('group.index')">
                                     Group
+                                </NavLink>
+                                <NavLink :href="route('friend.index')" :active="route().current('friend.index')">
+                                    <span class="w-20 flex items-center select-none justify-center">
+                                        <v-tooltip text="Friendship"  location="bottom">
+                                            <template v-slot:activator="{ props  }">
+                                                <UsersIcon v-bind="props" class-name="w-8 select-none"/>
+                                            </template>
+                                        </v-tooltip>
+                                    </span>
                                 </NavLink>
                             </div>
                         </div>

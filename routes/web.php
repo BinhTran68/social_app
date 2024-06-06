@@ -1,5 +1,6 @@
 <?php
 
+use App\Domain\Friendships\Controllers\FriendshipController;
 use App\Domain\Group\Controllers\GroupController;
 use App\Domain\Group\Controllers\GroupViewController;
 use App\Domain\Home\Controllers\HomeController;
@@ -38,6 +39,13 @@ Route::middleware('auth')->group(function () {
 
     // User
     Route::get('/users/find', [UserController::class, 'find'])->name('user.find_keyword');
+
+    // Friends
+     Route::get('/friends', [FriendshipController::class, 'index'])->name('friend.index');
+     Route::get('/friends/{user}', [FriendshipController::class, 'suggestFriendship'])->name('friend.suggest');
+//     Route::get('/friends/friend-requests', [FriendshipController::class, 'index'])->name('friend.index');
+//     Route::get('/friends/suggestions', [FriendshipController::class, 'index'])->name('friend.index');
+//     Route::get('/friends/all-friends', [FriendshipController::class, 'index'])->name('friend.index');
 
 
 

@@ -15,6 +15,7 @@ import WaitingSpinner from "@/Components/WaitingSpinner.vue";
 import {toast} from "vue3-toastify";
 import AuthenticatedLayoutFullScreen from "@/Layouts/AuthenticatedLayoutFullScreen.vue";
 import { uploadFileToCloud } from "@/Utils/utils.js";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
 const props = defineProps({
     mustVerifyEmail: {
@@ -143,7 +144,7 @@ const handleSubmitChangeAvatar = async () => {
 </style>
 
 <template>
-    <AuthenticatedLayoutFullScreen>
+    <AuthenticatedLayout>
         <div v-if="isLoading">
             <WaitingSpinner/>
         </div>
@@ -353,6 +354,6 @@ const handleSubmitChangeAvatar = async () => {
                 </TabGroup>
             </div>
         </div>
-    </AuthenticatedLayoutFullScreen>
+    </AuthenticatedLayout>
 
 </template>

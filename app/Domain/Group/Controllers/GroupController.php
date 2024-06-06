@@ -3,7 +3,7 @@
 namespace App\Domain\Group\Controllers;
 
 use App\Domain\Group\Actions\StoreGroupAction;
-use App\Domain\Group\Enum\GroupUserStatus;
+use App\Domain\Group\Enums\GroupUserStatus;
 use App\Domain\Group\Requests\StoreGroupRequest;
 use App\Domain\Group\Requests\UpdateGroupRequest;
 use App\Domain\Group\Resources\GroupResource;

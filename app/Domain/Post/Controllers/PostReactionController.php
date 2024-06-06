@@ -3,7 +3,7 @@
 namespace App\Domain\Post\Controllers;
 
 use App\Domain\Post\Actions\ReactionPostAction;
-use App\Domain\Post\Enum\ReactionEnum;
+use App\Domain\Post\Enums\ReactionEnum;
 use App\Models\Post;
 use App\Models\PostReaction;
 use Illuminate\Http\Request;

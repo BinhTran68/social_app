@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain\Post\Enum;
+namespace App\Domain\Post\Enums;
 
 enum ReactionEnum:string
 {

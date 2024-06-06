@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain\Group\Enum;
+namespace App\Domain\Group\Enums;
 
 enum GroupUserRole:string
 {

@@ -2,7 +2,7 @@
 
 namespace App\Domain\Home\Controllers;
 
-use App\Domain\Group\Enum\GroupUserStatus;
+use App\Domain\Group\Enums\GroupUserStatus;
 use App\Domain\Group\Resources\GroupResource;
 use App\Domain\Post\Resources\PostResource;
 use App\Http\Controllers\Controller;

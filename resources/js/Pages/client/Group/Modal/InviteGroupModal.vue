@@ -40,14 +40,16 @@ function closeModal() {
 }
 
 const handleOnSubmit = ({ content }) => {
-
+    isProcessing.value = true
     axios.get(route('user.find_keyword', [{keyword: content, page: null}]))
         .then(res => {
             const  data = res.data
             usersRef.value = data
         })
         .catch(e => {
-
+            console.log(e)
+        }).finally(() => {
+        isProcessing.value = false
         })
 }
 
@@ -141,7 +143,10 @@ const options = ref([
                                                 :placeholder="'Search person by name,user-name'" submit-text="Search" />
                                         </div>
                                         <h5 class="py-2 font-weight-bold">Suggested</h5>
-                                        <span v-if="usersRef.length <= 0">
+                                        <span v-if="isProcessing">
+                                            Pending ...
+                                        </span>
+                                        <span v-if="!isProcessing && usersRef.length <= 0">
                                             Can't find person for suggested
                                         </span>
                                         <div v-for="user in usersRef" class="flex py-2 items-center justify-between gap-2">

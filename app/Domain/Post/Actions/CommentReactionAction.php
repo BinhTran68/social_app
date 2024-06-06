@@ -2,7 +2,7 @@
 
 namespace App\Domain\Post\Actions;
 
-use App\Domain\Post\Enum\ReactionEnum;
+use App\Domain\Post\Enums\ReactionEnum;
 use App\Models\Comment;
 use App\Models\CommentReaction;
 use App\Models\PostReaction;

@@ -27,18 +27,18 @@ function handleImageError() {
 <template>
     <Head title="Socical Media Website"/>
     <AuthenticatedLayout>
-        <div class="grid lg:grid-cols-12  gap-3 relative py-5  ">
-            <div class="lg:col-span-4 md:order-1">
-                <div class="fixed hidden lg:block max-w-96  bg-white rounded-lg flex-1">
+        <div class="grid lg:grid-cols-12  gap-8 relative py-5  ">
+            <div class="lg:col-span-3 md:order-1">
+                <div class=" hidden lg:block w-full bg-white rounded-lg">
                     <GroupMain :groups="groups.data" />
                 </div>
             </div>
-            <div class="lg:col-span-4 md:order-3">
-                <div class="fixed hidden lg:block right-1 max-w-96 bg-white rounded-lg flex-1">
+            <div class="lg:col-span-3 md:order-3 ">
+                <div class="hidden float-end lg:block right-1 w-full  bg-white rounded-lg ">
                     <GroupMain :groups="groups.data" />
                 </div>
             </div>
-            <div class="lg:col-span-4 md:order-2 flex flex-col w-full gap-3 overflow-hidden ">
+            <div class="lg:col-span-6 md:order-2 flex flex-col   gap-3 overflow-hidden ">
                 <CreatePost/>
                 <PostsList :posts="posts.data"/>
             </div>

@@ -2,8 +2,8 @@
 
 namespace App\Domain\Group\Actions;
 
-use App\Domain\Group\Enum\GroupUserRole;
-use App\Domain\Group\Enum\GroupUserStatus;
+use App\Domain\Group\Enums\GroupUserRole;
+use App\Domain\Group\Enums\GroupUserStatus;
 use App\Domain\Group\Requests\StoreGroupRequest;
 use App\Domain\Group\Resources\GroupResource;
 use App\Models\Group;

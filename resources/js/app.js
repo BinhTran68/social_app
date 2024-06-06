@@ -33,7 +33,7 @@ createInertiaApp({
         return createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(ZiggyVue)
-            .use( CKEditor  )
+            .use( CKEditor )
             .use(vuetify)  // vuetify UI
             .use(Vue3Toasity, {
                 autoClose: 3000,
